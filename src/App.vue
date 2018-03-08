@@ -1,17 +1,51 @@
 <template>
     <div id="app">
-        <img src="./assets/logo.png">
-        <HelloWorld/>
+        <transition name="fade" appear>
+            <loading v-show="showLoading"></loading>
+        </transition>
+        <home v-show="showHome"></home>
     </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import loading from './components/loading';
+import home from './components/home';
 
 export default {
     name: 'App',
     components: {
-        HelloWorld
+        loading,
+        home
+    },
+    data() {
+        return {
+            showLoading: true,
+            showHome: false
+        };
+    },
+    methods: {
+        initEvents() {
+            this.$bus.$on('ready', () => {
+                this.showHome = true;
+                setTimeout(() => {
+                    this.showLoading = false;
+                }, 500);
+            });
+            this.$bus.$on('progress', (progress) => {
+                if (progress >= 100) {
+                    this.$bus.$emit('ready');
+                }
+            });
+        },
+        load() {
+            setTimeout(() => {
+                this.$bus.$emit('progress', 100);
+            }, 2000);
+        }
+    },
+    mounted() {
+        this.initEvents();
+        this.load();
     }
 };
 </script>
@@ -22,7 +56,5 @@ export default {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
 }
 </style>
