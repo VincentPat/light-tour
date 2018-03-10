@@ -40,7 +40,7 @@ export default {
         load() {
             setTimeout(() => {
                 this.$bus.$emit('progress', 100);
-            }, 2000);
+            }, 100);
         }
     },
     mounted() {

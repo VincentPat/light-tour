@@ -2,14 +2,10 @@
     <div class="homepage">
         <img class="homepage__logo"
             src="https://static.cdn.24haowan.com/img/32/32152051868757390.png">
-        <div class="homepage__music">
-            <v-music-switch
-                @switch="switchMusic"
-                :on="musicOn"
-                :imgOn="imgOn"
-                :imgOff="imgOff">
-            </v-music-switch>
-        </div>
+        <img src="https://static.cdn.24haowan.com/img/32/32152068822684683.png"
+            class="homepage__light">
+        <img src="https://static.cdn.24haowan.com/img/32/32152068822683762.png"
+            class="homepage__line">
         <img src="https://static.cdn.24haowan.com/img/32/32152051869532387.png"
             class="homepage__title">
         <div class="homepage__gift"
@@ -23,57 +19,46 @@
 </template>
 
 <script>
-import vMusicSwitch from '@/components/common/v-music-switch';
-
 export default {
     name: 'homepage',
-    components: {
-        vMusicSwitch
-    },
     data() {
         return {
-            musicOn: true,
-            imgOn: 'https://static.cdn.24haowan.com/img/32/32152051868661185.png',
-            imgOff: 'https://static.cdn.24haowan.com/img/32/32152051868551902.png',
             showGift: true
         };
     },
     methods: {
-        switchMusic() {
-            this.$bus.$emit('switchMusic');
-        },
         getGift() {
             this.$bus.$emit('getGift');
         }
-    },
-    mounted() {
-        this.$bus.$on('switchMusic', () => {
-            this.musicOn = !this.musicOn;
-        });
     }
 };
 </script>
 
 <style lang="scss">
-@import '../../style/mixin.scss';
-@import '../../style/color.scss';
+@import '../style/mixin.scss';
+@import '../style/color.scss';
 
 .homepage {
     @include fullscreen;
     @include bg-cover;
-    background-image: url('https://static.cdn.24haowan.com/img/32/32152051868257666.png');
+    background-color: $c-blue;
     &__logo {
         position: absolute;
         top: 10vw;
         right: 6vw;
         width: 16vw;
     }
-    &__music {
+    &__light {
         position: absolute;
-        top: 6vw;
-        left: 6vw;
-        width: 10vw;
-        height: 10vw;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+    }
+    &__line {
+        position: absolute;
+        bottom: 18vh;
+        right: 0;
+        width: 90vw;
     }
     &__title {
         position: absolute;

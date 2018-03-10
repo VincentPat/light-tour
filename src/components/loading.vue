@@ -5,6 +5,7 @@
                 :style="progressWidth">
             </div>
         </div>
+        <img src="https://static.cdn.24haowan.com/img/32/32152068793321119.png" class="loading__text">
     </div>
 </template>
 
@@ -36,8 +37,8 @@ export default {
 .loading {
     @include fullscreen;
     @include bg-cover;
-    background-position: center bottom;
-    background-image: url('https://static.cdn.24haowan.com/img/32/3215205186802582.png');
+    background-position: center top;
+    background-image: url('https://static.cdn.24haowan.com/img/32/32152068781178304.png');
     z-index: 100;
     &__progress {
         @include transform-center;
@@ -48,11 +49,17 @@ export default {
         overflow: hidden;
         background: $c-darkblue;
         &__bar {
-            background: linear-gradient(90deg, $c-orange, $c-yellow);;
+            background: linear-gradient(90deg, $c-orange, $c-yellow);
             height: 100%;
             transition: all ease-out .2s;
             border-radius: 10px;
         }
+    }
+    &__text {
+        position: absolute;
+        top: 60vh;
+        width: 60vw;
+        left: 20vw;
     }
 }
 </style>
