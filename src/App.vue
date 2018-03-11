@@ -4,23 +4,29 @@
             <loading v-show="showLoading"></loading>
         </transition>
         <home v-show="showHome"></home>
+        <transition name="fade">
+            <share v-show="showShare"></share>
+        </transition>
     </div>
 </template>
 
 <script>
 import loading from './components/loading';
 import home from './components/home';
+import share from './components/share';
 
 export default {
     name: 'App',
     components: {
         loading,
-        home
+        home,
+        share
     },
     data() {
         return {
             showLoading: true,
-            showHome: false
+            showHome: false,
+            showShare: false
         };
     },
     methods: {
@@ -35,6 +41,12 @@ export default {
                 if (progress >= 100) {
                     this.$bus.$emit('ready');
                 }
+            });
+            this.$bus.$on('showShare', () => {
+                this.showShare = true;
+            });
+            this.$bus.$on('hideShare', () => {
+                this.showShare = false;
             });
         },
         load() {

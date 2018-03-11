@@ -1,31 +1,31 @@
 <template>
-    <div class="floor1">
-        <div class="floor1__stage"
+    <div class="floor5">
+        <div class="floor5__stage"
             @click="showInfo">
-            <img src="https://static.cdn.24haowan.com/img/32/32152056922035508.png"
+            <img src="https://static.cdn.24haowan.com/img/32/32152076144441534.png"
                 class="before"
                 :class="{ active }">
-            <img src="https://static.cdn.24haowan.com/img/32/32152056921951818.png"
+            <img src="https://static.cdn.24haowan.com/img/32/32152076144456808.png"
                 class="after"
                 :class="{ active }">
         </div>
-        <div class="floor1__name"
+        <div class="floor5__name"
             @click="showInfo">
-            <img src="https://static.cdn.24haowan.com/img/32/32152056922228587.png"
+            <img src="https://static.cdn.24haowan.com/img/32/32152076144546387.png"
                 class="before"
                 :class="{ active }">
-            <img src="https://static.cdn.24haowan.com/img/32/32152075997593402.png"
+            <img src="https://static.cdn.24haowan.com/img/32/32152075997779284.png"
                 class="after"
                 :class="{ active }">
         </div>
         <transition name="fade">
-            <img src="https://static.cdn.24haowan.com/img/32/32152056922159093.png"
-                class="floor1__achieve"
+            <img src="https://static.cdn.24haowan.com/img/32/32152056922596263.png"
+                class="floor5__achieve"
                 v-show="active">
         </transition>
         <transition name="fade">
             <img src="https://static.cdn.24haowan.com/img/32/3215205692236479.png"
-                class="floor1__guide wanderVer"
+                class="floor5__guide wanderVer"
                 v-show="!active">
         </transition>
     </div>
@@ -33,7 +33,7 @@
 
 <script>
 export default {
-    name: 'floor1',
+    name: 'floor5',
     data() {
         return {
             active: false
@@ -51,7 +51,7 @@ export default {
 @import '../style/mixin.scss';
 @import '../style/color.scss';
 
-.floor1 {
+.floor5 {
     @include fullfill;
     img {
         &.before, &.after {
@@ -81,20 +81,20 @@ export default {
     }
     &__name {
         position: absolute;
-        top: 46%;
-        right: 10%;
+        top: 54%;
+        left: 14%;
         width: 25vw;
     }
     &__achieve {
         position: absolute;
-        top: 0;
-        left: 22%;
+        top: 6%;
+        left: 37%;
         width: 28vw;
     }
     &__guide {
         position: absolute;
-        top: 65%;
-        right: 10%;
+        top: 76%;
+        left: 14%;
         width: 6vw;
     }
 }

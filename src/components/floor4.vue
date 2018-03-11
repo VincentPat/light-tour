@@ -1,31 +1,36 @@
 <template>
-    <div class="floor1">
-        <div class="floor1__stage"
+    <div class="floor4">
+        <div class="floor4__stage"
             @click="showInfo">
-            <img src="https://static.cdn.24haowan.com/img/32/32152056922035508.png"
+            <img src="https://static.cdn.24haowan.com/img/32/3215207602236898.png"
                 class="before"
                 :class="{ active }">
-            <img src="https://static.cdn.24haowan.com/img/32/32152056921951818.png"
+            <img src="https://static.cdn.24haowan.com/img/32/32152076022224996.png"
                 class="after"
                 :class="{ active }">
         </div>
-        <div class="floor1__name"
+        <div class="floor4__name"
             @click="showInfo">
-            <img src="https://static.cdn.24haowan.com/img/32/32152056922228587.png"
+            <img src="https://static.cdn.24haowan.com/img/32/32152076022310078.png"
                 class="before"
                 :class="{ active }">
-            <img src="https://static.cdn.24haowan.com/img/32/32152075997593402.png"
+            <img src="https://static.cdn.24haowan.com/img/32/321520759977242.png"
                 class="after"
                 :class="{ active }">
         </div>
         <transition name="fade">
+            <img class="floor4__animal"
+                src="https://static.cdn.24haowan.com/img/32/32152076022334105.png"
+                v-show="active">
+        </transition>
+        <transition name="fade">
             <img src="https://static.cdn.24haowan.com/img/32/32152056922159093.png"
-                class="floor1__achieve"
+                class="floor4__achieve"
                 v-show="active">
         </transition>
         <transition name="fade">
             <img src="https://static.cdn.24haowan.com/img/32/3215205692236479.png"
-                class="floor1__guide wanderVer"
+                class="floor4__guide wanderVer"
                 v-show="!active">
         </transition>
     </div>
@@ -33,7 +38,7 @@
 
 <script>
 export default {
-    name: 'floor1',
+    name: 'floor4',
     data() {
         return {
             active: false
@@ -51,7 +56,7 @@ export default {
 @import '../style/mixin.scss';
 @import '../style/color.scss';
 
-.floor1 {
+.floor4 {
     @include fullfill;
     img {
         &.before, &.after {
@@ -81,20 +86,26 @@ export default {
     }
     &__name {
         position: absolute;
-        top: 46%;
-        right: 10%;
+        top: 64%;
+        right: 20%;
         width: 25vw;
+    }
+    &__animal {
+        position: absolute;
+        top: 14%;
+        left: 28%;
+        width: 46vw;
     }
     &__achieve {
         position: absolute;
-        top: 0;
-        left: 22%;
+        top: 6%;
+        left: 38%;
         width: 28vw;
     }
     &__guide {
         position: absolute;
-        top: 65%;
-        right: 10%;
+        top: 85%;
+        right: 21%;
         width: 6vw;
     }
 }

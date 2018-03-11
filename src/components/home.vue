@@ -19,6 +19,15 @@
             <swiper-slide>
                 <floor3></floor3>
             </swiper-slide>
+            <swiper-slide>
+                <floor4></floor4>
+            </swiper-slide>
+            <swiper-slide>
+                <floor5></floor5>
+            </swiper-slide>
+            <swiper-slide>
+                <floor6></floor6>
+            </swiper-slide>
             <img src="https://static.cdn.24haowan.com/img/32/32152056921844150.png"
                 class="home__swiper__bg"
                 :style="bgStyle">
@@ -41,6 +50,9 @@ import rule from '@/components/rule';
 import floor1 from '@/components/floor1';
 import floor2 from '@/components/floor2';
 import floor3 from '@/components/floor3';
+import floor4 from '@/components/floor4';
+import floor5 from '@/components/floor5';
+import floor6 from '@/components/floor6';
 
 export default {
     name: 'home',
@@ -51,6 +63,9 @@ export default {
         floor1,
         floor2,
         floor3,
+        floor4,
+        floor5,
+        floor6,
     },
     computed: {
         swiper() {

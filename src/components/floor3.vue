@@ -16,7 +16,7 @@
             <img src="https://static.cdn.24haowan.com/img/32/32152069065246564.png"
                 class="before"
                 :class="{ active }">
-            <img src="https://static.cdn.24haowan.com/img/32/32152069065246564.png"
+            <img src="https://static.cdn.24haowan.com/img/32/32152075997649029.png"
                 class="after"
                 :class="{ active }">
         </div>
@@ -50,7 +50,7 @@ export default {
                 light.style.opacity = '0';
                 setTimeout(() => {
                     this.active = true;
-                }, 1000);
+                }, 800);
             }, 50);
         }
     }
@@ -96,7 +96,7 @@ export default {
         width: 70vw;
         opacity: 0;
         &.active {
-            transition: all linear 1s;
+            transition: all linear .8s;
         }
     }
     &__name {

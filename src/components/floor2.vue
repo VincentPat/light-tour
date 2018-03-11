@@ -25,7 +25,7 @@
             <img src="https://static.cdn.24haowan.com/img/32/32152068874137571.png"
                 class="before"
                 :class="{ active }">
-            <img src="https://static.cdn.24haowan.com/img/32/32152068874137571.png"
+            <img src="https://static.cdn.24haowan.com/img/32/32152075997634510.png"
                 class="after"
                 :class="{ active }">
         </div>
