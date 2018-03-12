@@ -63,6 +63,14 @@ export default {
     },
     data() {
         return {
+            audios: {},
+            audiosSrc: {
+                bg: 'https://static.cdn.24haowan.com/music/32/321520852919.mp3',
+                click: 'https://static.cdn.24haowan.com/music/32/321520853009.mp3',
+                goal: 'https://static.cdn.24haowan.com/music/32/321520853048.mp3',
+                prize: 'https://static.cdn.24haowan.com/music/32/321520853075.mp3'
+            },
+            muted: false,
             showLoading: true,
             showHome: false,
             showShare: false,
@@ -71,6 +79,7 @@ export default {
             floorDesc: {},
             floorDescData,
             currentFloor: 1,
+            completedFloors: [],
             showGoal: false,
             showScanError: false,
             showComplete: false,
@@ -92,6 +101,9 @@ export default {
                     this.$bus.$emit('ready');
                 }
             });
+            this.$bus.$on('switchMusic', () => {
+                this.switchMusic();
+            });
             // 分享页
             this.$bus.$on('showShare', () => {
                 this.showShare = true;
@@ -108,6 +120,7 @@ export default {
             });
             // 楼层介绍
             this.$bus.$on('showFloorDesc', (no) => {
+                this.playMusic('click');
                 this.floorDesc = this.floorDescData[no - 1];
                 this.currentFloor = no;
                 this.showFloorDesc = true;
@@ -115,7 +128,38 @@ export default {
             this.$bus.$on('hideFloorDesc', () => {
                 this.showFloorDesc = false;
             });
+            // 扫描
+            this.$bus.$on('scan', () => {
+                setTimeout(() => {
+                    this.$bus.$emit('scanSuccess');
+                }, 1000);
+            });
+            this.$bus.$on('scanSuccess', () => {
+                this.$bus.$emit('hideFloorDesc');
+                this.$bus.$emit('goal', this.currentFloor);
+            });
+            this.$bus.$on('scanError', () => {
+                this.$bus.$emit('hideFloorDesc');
+                this.$bus.$emit('showScanError');
+            });
+            // 扫描错误
+            this.$bus.$on('showScanError', () => {
+                this.showScanError = true;
+            });
+            this.$bus.$on('hideScanError', () => {
+                this.showScanError = false;
+            });
             // 点亮成功
+            this.$bus.$on('goal', (no) => {
+                if (this.completedFloors.indexOf(no) === -1) this.completedFloors.push(no);
+                this.$bus.$emit('showGoal');
+                this.playMusic('goal');
+                if (this.completedFloors.length >= 6) { // 全部完成
+                    setTimeout(() => {
+                        this.$bus.$emit('complete');
+                    }, 3500);
+                }
+            });
             this.$bus.$on('showGoal', () => {
                 this.showGoal = true;
                 setTimeout(() => {
@@ -125,28 +169,23 @@ export default {
             this.$bus.$on('hideGoal', () => {
                 this.showGoal = false;
             });
-            // 扫描
-            this.$bus.$on('scan', () => {
-                setTimeout(() => {
-                    this.$bus.$emit('hideFloorDesc');
-                    this.$bus.$emit('goal', this.currentFloor);
-                }, 2000);
+            // 完全通关
+            this.$bus.$on('complete', () => {
+                this.$bus.$emit('showComplete');
             });
-            // 扫描错误
-            this.$bus.$on('showScanError', () => {
-                this.showScanError = true;
-            });
-            this.$bus.$on('hideScanError', () => {
-                this.showScanError = false;
-            });
-            // 完成任务
+            // 完成所有任务
             this.$bus.$on('showComplete', () => {
+                this.playMusic('prize');
                 this.showComplete = true;
             });
             this.$bus.$on('hideComplete', () => {
                 this.showComplete = false;
             });
             // 获得奖品
+            this.$bus.$on('getCompletePrize', () => {
+                this.$bus.$emit('hideComplete');
+                this.$bus.$emit('showGetPrize');
+            });
             this.$bus.$on('showGetPrize', () => {
                 this.showGetPrize = true;
             });
@@ -158,12 +197,36 @@ export default {
             setTimeout(() => {
                 this.$bus.$emit('progress', 100);
             }, 100);
+        },
+        initAudios() {
+            Object.keys(this.audiosSrc).forEach((key) => {
+                const url = this.audiosSrc[key];
+                this.audios[key] = new Audio();
+                this.audios[key].src = url;
+                if (key === 'bg') this.audios[key].loop = true;
+            });
+        },
+        playMusic(key) {
+            if (key in this.audios && !this.muted) this.audios[key].play();
+        },
+        pauseMusic() {
+            this.audios.bg.pause();
+        },
+        switchMusic() {
+            this.muted = !this.muted;
+            if (!this.muted) { // 重新播放音乐
+                this.playMusic('bg');
+            } else { // 暂停播放音乐
+                this.pauseMusic();
+            }
         }
     },
     mounted() {
+        this.initAudios();
         this.initEvents();
         this.load();
         window.bus = this.$bus;
+        window.app = this;
     }
 };
 </script>
