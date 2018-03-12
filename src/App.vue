@@ -1,9 +1,9 @@
 <template>
-    <div id="app">
+    <div id="app" @touchmove.stop>
         <transition name="fade" appear>
             <loading v-show="showLoading"></loading>
         </transition>
-        <home v-show="showHome"></home>
+        <home :class="{ show: showHome }"></home>
         <transition name="fade">
             <share v-show="showShare"></share>
         </transition>
@@ -47,6 +47,9 @@ import goal from '@/components/goal';
 import scanError from '@/components/scan-error';
 import complete from '@/components/complete';
 import getPrize from '@/components/get-prize';
+import wx from '@/plugin/wx';
+import axios from 'axios';
+import { Base64 } from 'js-base64';
 
 export default {
     name: 'App',
@@ -63,6 +66,10 @@ export default {
     },
     data() {
         return {
+            progress: 0,
+            timestamp: Date.now(),
+            envData: {},
+            imgs: [],
             audios: {},
             audiosSrc: {
                 bg: 'https://static.cdn.24haowan.com/music/32/321520852919.mp3',
@@ -89,6 +96,30 @@ export default {
         };
     },
     methods: {
+        // 初始化环境数据
+        initEnvData() {
+            this.env = location.host.match(/api.24haowan.com/ig) ? 'production' : 'test';
+            if (this.env === 'test') {
+                this.envData = {
+                    host: 'http://test.api.klub11.com',
+                    account_id: '6',
+                    apiKey: '271151990342466',
+                    apiSecret: 'rAoV68K4',
+                    interfaceId: 'fb9cff6e93ff6342f066',
+                    skey: '21da1090',
+                };
+            } else if (this.env === 'production') {
+                this.envData = {
+                    host: 'https://api.klub11.com',
+                    account_id: '6',
+                    apiKey: '271151990342466',
+                    apiSecret: 'rAoV68K4',
+                    interfaceId: 'fb9cff6e93ff6342f066',
+                    skey: '21da1090',
+                };
+            }
+        },
+        // 事件
         initEvents() {
             this.$bus.$on('ready', () => {
                 this.showHome = true;
@@ -97,8 +128,13 @@ export default {
                 }, 500);
             });
             this.$bus.$on('progress', (progress) => {
-                if (progress >= 100) {
-                    this.$bus.$emit('ready');
+                this.progress += progress;
+                if (this.progress >= 100) {
+                    let countdown = 3000 - (Date.now() - this.timestamp);
+                    countdown = countdown > 0 ? countdown : 1;
+                    setTimeout(() => {
+                        this.$bus.$emit('ready');
+                    }, countdown);
                 }
             });
             this.$bus.$on('switchMusic', () => {
@@ -192,12 +228,23 @@ export default {
             this.$bus.$on('hideGetPrize', () => {
                 this.showGetPrize = false;
             });
+            // 禁止滑动
+            document.body.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            });
         },
+        // 加载
         load() {
-            setTimeout(() => {
-                this.$bus.$emit('progress', 100);
-            }, 100);
+            const imgs = document.querySelectorAll('img');
+            imgs.forEach((img) => {
+                const tmp = new Image();
+                tmp.onload = () => {
+                    this.$bus.$emit('progress', 1 / imgs.length * 80);
+                };
+                tmp.src = img.src;
+            });
         },
+        // 音频相关
         initAudios() {
             Object.keys(this.audiosSrc).forEach((key) => {
                 const url = this.audiosSrc[key];
@@ -219,14 +266,91 @@ export default {
             } else { // 暂停播放音乐
                 this.pauseMusic();
             }
+        },
+        // 请求相关
+        getWxConfig() {
+            const url = `${this.envData.host}/v1/wechat-js/js-config`;
+            const timestamp = Date.now();
+            axios({
+                method: 'get',
+                url,
+                params: {
+                    apiKey: this.envData.apiKey,
+                    interfaceId: this.envData.interfaceId,
+                    timestamp,
+                    sign: 'ABC',
+                    account_id: this.envData.account_id,
+                    domain_url: location.href.split('#')[0]
+                },
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then((response) => {
+                const result = this.decodeReturnData(response.data);
+                console.log(response);
+                console.log(result);
+                const config = result.data;
+                wx.configWx(config);
+            }).catch((error) => {
+                console.error(error);
+            });
+        },
+        processRequestData(url, data) {
+            const dataArr = [];
+            Object.keys(data).forEach((key) => {
+                dataArr.push(`${key}=${data[key]}`);
+            });
+            return `${url}?${dataArr.join('&')}`;
+        },
+        decodeReturnData(str) {
+            let result = str;
+            const skey = this.envData.skey;
+            const replaceStr = {
+                mqtp: ':',
+                mbscd: '=',
+                nnddt: '+',
+                abcde: '/',
+                adted: '|'
+            };
+            Object.keys(replaceStr).forEach((char) => {
+                result = result.replace(new RegExp(char, 'g'), replaceStr[char]);
+            });
+            const len = result.length;
+            const charArr = [];
+            const charNum = Math.floor(len / 2);
+            for (let i = 1; i <= charNum; i += 1) {
+                const startIndex = (i - 1) * 2;
+                const char = result.substr(startIndex, 2);
+                charArr.push(char);
+            }
+            const skeyArr = skey.split('');
+            const skeyArrLen = skeyArr.length;
+            for (let key = 0; key < skeyArrLen; key += 1) {
+                const value = skeyArr[key];
+                if (key <= skeyArrLen && charArr[key][1] === value) {
+                    charArr[key] = charArr[key][0];
+                }
+            }
+            const temp = charArr.join('');
+            let temp2 = Base64.decode(temp);
+            try {
+                temp2 = JSON.parse(temp2);
+            } catch (error) {
+                console.error(error);
+            }
+            return temp2;
         }
     },
     mounted() {
+        this.initEnvData();
         this.initAudios();
         this.initEvents();
         this.load();
+        // this.getWxConfig();
         window.bus = this.$bus;
         window.app = this;
+
+        console.log(this.decodeReturnData('e2y1Jdjab120R9l0IjowLCJtc2ciOiLmiJDlip8iLCJkYXRhIjp7ImRlYnVnIjpmYWxzZSwiYXBwSWQiOiJ3eDBmNWRjYTgwYTJmZTRlNGEiLCJ0aW1lc3RhbXAiOjE1MjA4NTk1NDIsIm5vbmNlU3RyIjoiNWFhNjc5OTYwMDViMyIsInNpZ25hdHVyZSI6ImI2OGY2M2IwNDIwYWNlMjY2MWIxMTYzODYxNTQ2Yzc5MWM4ZjU5MDEiLCJqc0FwaUxpc3QiOlsiaGlkZU9wdGlvbk1lbnUiLCJzaG93T3B0aW9uTWVudSIsImNsb3NlV2luZG93IiwiYWRkQ2FyZCIsImNob29zZUNhcmQiLCJvcGVuQ2FyZCJdfX0mbscd'));
     }
 };
 </script>

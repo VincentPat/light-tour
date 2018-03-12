@@ -30,7 +30,8 @@
             </swiper-slide>
             <img src="https://static.cdn.24haowan.com/img/32/32152056921844150.png"
                 class="home__swiper__bg"
-                :style="bgStyle">
+                :style="bgStyle"
+                @load="bgLoad">
         </swiper>
         <div class="home__music">
             <v-music-switch
@@ -88,6 +89,9 @@ export default {
     methods: {
         switchMusic() {
             this.$bus.$emit('switchMusic');
+        },
+        bgLoad() {
+            this.$bus.$emit('progress', 21);
         }
     },
     mounted() {
@@ -105,6 +109,10 @@ export default {
 .home {
     @include fullscreen;
     background-color: $c-blue;
+    opacity: 0;
+    &.show {
+        opacity: 1;
+    }
     .swiper-wrapper {
         width: 100vw;
         height: 100vh;

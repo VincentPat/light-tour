@@ -24,7 +24,7 @@ export default {
     },
     mounted() {
         this.$bus.$on('progress', (progress) => {
-            this.progress = progress;
+            this.progress += progress;
         });
     }
 };
