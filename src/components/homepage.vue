@@ -28,7 +28,7 @@ export default {
     },
     methods: {
         getGift() {
-            this.$bus.$emit('getGift');
+            this.$bus.$emit('showComplete');
         }
     }
 };

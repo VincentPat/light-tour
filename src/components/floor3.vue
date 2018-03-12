@@ -43,16 +43,25 @@ export default {
     },
     methods: {
         showInfo() {
-            const light = document.querySelectorAll('.floor3__light')[0];
-            light.style.opacity = '1';
-            setTimeout(() => {
-                light.className += ' active';
-                light.style.opacity = '0';
-                setTimeout(() => {
-                    this.active = true;
-                }, 800);
-            }, 50);
+            if (!this.active) {
+                this.$bus.$emit('showFloorDesc', 3);
+            }
         }
+    },
+    mounted() {
+        this.$bus.$on('goal', (no) => {
+            if (no === 3) {
+                const light = document.querySelectorAll('.floor3__light')[0];
+                light.style.opacity = '1';
+                setTimeout(() => {
+                    light.className += ' active';
+                    light.style.opacity = '0';
+                    setTimeout(() => {
+                        this.active = true;
+                    }, 800);
+                }, 50);
+            }
+        });
     }
 };
 </script>
@@ -90,6 +99,7 @@ export default {
         width: 100vw;
     }
     &__light {
+        pointer-events: none;
         position: absolute;
         top: 25%;
         left: 44%;

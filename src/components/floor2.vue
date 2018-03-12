@@ -52,8 +52,15 @@ export default {
     },
     methods: {
         showInfo() {
-            this.active = true;
+            if (!this.active) {
+                this.$bus.$emit('showFloorDesc', 2);
+            }
         }
+    },
+    mounted() {
+        this.$bus.$on('goal', (no) => {
+            if (no === 2) this.active = true;
+        });
     }
 };
 </script>
@@ -91,6 +98,7 @@ export default {
         width: 100vw;
     }
     &__float {
+        pointer-events: none;
         img {
             transition: all linear .5s;
             &.active {

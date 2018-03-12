@@ -64,7 +64,9 @@ export default {
     },
     methods: {
         showInfo() {
-            this.active = true;
+            if (!this.active) {
+                this.$bus.$emit('showFloorDesc', 6);
+            }
         },
         showShare() {
             this.$bus.$emit('showShare');
@@ -105,6 +107,9 @@ export default {
     mounted() {
         this.noteCnt = document.querySelectorAll('.floor6__note')[0];
         this.showNote();
+        this.$bus.$on('goal', (no) => {
+            if (no === 6) this.active = true;
+        });
     }
 };
 </script>
@@ -148,6 +153,7 @@ export default {
         width: 25vw;
     }
     &__note {
+        pointer-events: none;
         img {
             transition: all linear .5s;
             &.active {

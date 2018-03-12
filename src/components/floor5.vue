@@ -41,8 +41,15 @@ export default {
     },
     methods: {
         showInfo() {
-            this.active = true;
+            if (!this.active) {
+                this.$bus.$emit('showFloorDesc', 5);
+            }
         }
+    },
+    mounted() {
+        this.$bus.$on('goal', (no) => {
+            if (no === 5) this.active = true;
+        });
     }
 };
 </script>
