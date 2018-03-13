@@ -23,13 +23,18 @@ export default {
     name: 'homepage',
     data() {
         return {
-            showGift: true
+            showGift: false
         };
     },
     methods: {
         getGift() {
             this.$bus.$emit('showComplete');
         }
+    },
+    mounted() {
+        this.$bus.$on('showGiftButton', () => {
+            this.showGift = true;
+        });
     }
 };
 </script>

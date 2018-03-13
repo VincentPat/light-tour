@@ -49,6 +49,7 @@ import complete from '@/components/complete';
 import getPrize from '@/components/get-prize';
 import wx from '@/plugin/wx';
 import axios from 'axios';
+import md5 from 'md5';
 import { Base64 } from 'js-base64';
 
 export default {
@@ -66,33 +67,36 @@ export default {
     },
     data() {
         return {
-            progress: 0,
-            timestamp: Date.now(),
-            envData: {},
-            imgs: [],
-            audios: {},
+            isMember: false, // 是否为会员
+            progress: 0, // 加载进度
+            timestamp: Date.now(), // 进入页面的时间
+            envData: {}, // 运行环境参数
+            imgs: [], // 图片
+            audios: {}, // 音频
             audiosSrc: {
                 bg: 'https://static.cdn.24haowan.com/music/32/321520852919.mp3',
                 click: 'https://static.cdn.24haowan.com/music/32/321520853009.mp3',
                 goal: 'https://static.cdn.24haowan.com/music/32/321520853048.mp3',
                 prize: 'https://static.cdn.24haowan.com/music/32/321520853075.mp3'
-            },
-            muted: false,
+            }, // 音频地址
+            muted: false, // 是否静音
+            currentFloor: 1, // 当前展示楼层
+            completedFloors: [], // 已完成楼层
+            floorDesc: {}, // 楼层介绍
+            floorDescData, // 楼层介绍数据
+            // 奖品名称
+            prizeName: '广州K11艺术展览九折优惠券一张',
+            prizeImg: 'https://static.cdn.24haowan.com/img/32/32152076305274928.png',
+            // 模态框
             showLoading: true,
             showHome: false,
             showShare: false,
             showSubscribe: false,
             showFloorDesc: false,
-            floorDesc: {},
-            floorDescData,
-            currentFloor: 1,
-            completedFloors: [],
             showGoal: false,
             showScanError: false,
             showComplete: false,
             showGetPrize: false,
-            prizeName: '广州K11艺术展览九折优惠券一张',
-            prizeImg: 'https://static.cdn.24haowan.com/img/32/32152076305274928.png'
         };
     },
     methods: {
@@ -107,6 +111,7 @@ export default {
                     apiSecret: 'rAoV68K4',
                     interfaceId: 'fb9cff6e93ff6342f066',
                     skey: '21da1090',
+                    host24: 'http://test.ac.24haowan.com'
                 };
             } else if (this.env === 'production') {
                 this.envData = {
@@ -116,6 +121,7 @@ export default {
                     apiSecret: 'rAoV68K4',
                     interfaceId: 'fb9cff6e93ff6342f066',
                     skey: '21da1090',
+                    host24: 'http://api.24haowan.com'
                 };
             }
         },
@@ -166,13 +172,35 @@ export default {
             });
             // 扫描
             this.$bus.$on('scan', () => {
-                setTimeout(() => {
-                    this.$bus.$emit('scanSuccess');
-                }, 1000);
+                wx.scanQRCode({
+                    needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                    scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
+                    success: (res) => {
+                        const result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                        if (md5(`k11-${this.currentFloor}`) === result) { // 扫描楼层对了
+                            this.$bus.$emit('scanSuccess', result);
+                        } else {
+                            this.$bus.$emit('scanError');
+                        }
+                    }
+                });
             });
-            this.$bus.$on('scanSuccess', () => {
-                this.$bus.$emit('hideFloorDesc');
-                this.$bus.$emit('goal', this.currentFloor);
+            this.$bus.$on('scanSuccess', (result) => {
+                axios({
+                    method: 'get',
+                    url: `${this.envData.host24}/member/markLocation`,
+                    params: {
+                        str: result
+                    }
+                }).then((response) => {
+                    this.$bus.$emit('hideFloorDesc');
+                    const result = response.data;
+                    if (result.code === 0) {
+                        this.$bus.$emit('goal', this.currentFloor);
+                    }
+                }).catch((error) => {
+                    this.$bus.$emit('hideFloorDesc');
+                });
             });
             this.$bus.$on('scanError', () => {
                 this.$bus.$emit('hideFloorDesc');
@@ -232,6 +260,32 @@ export default {
             document.body.addEventListener('touchmove', (e) => {
                 e.preventDefault();
             });
+            // 自动播放音乐
+            document.addEventListener('WeixinJSBridgeReady', () => {
+                this.playMusic('bg');
+            });
+            // 分享回调
+            this.$bus.$on('shareCallback', () => {
+                this.$bus.$emit('hideShare');
+                axios({
+                    method: 'get',
+                    url: `${this.envData.host24}/member/share`
+                }).then((response) => {
+                    const result = response.data;
+                    if (result.code === 0) {
+                        if (result.data.isSubscribe === 0) { // 未关注公众号
+                            this.$bus.$emit('showSubscribe');
+                        }
+                    }
+                });
+            });
+            // 滑动页面
+            this.$bus.$on('slideChange', (activeIndex) => {
+                console.log(activeIndex);
+                if (activeIndex >= 2 && !this.isMember) {
+                    location.href = 'http://www.baidu.com';
+                }
+            });
         },
         // 加载
         load() {
@@ -287,21 +341,26 @@ export default {
                 }
             }).then((response) => {
                 const result = this.decodeReturnData(response.data);
-                console.log(response);
-                console.log(result);
                 const config = result.data;
-                wx.configWx(config);
+                this.setWx(config);
             }).catch((error) => {
                 console.error(error);
             });
         },
-        processRequestData(url, data) {
-            const dataArr = [];
-            Object.keys(data).forEach((key) => {
-                dataArr.push(`${key}=${data[key]}`);
+        // 设置微信分享信息
+        setWx(config) {
+            wx.configWx(config);
+            const wxShareObj = {
+                title: '今晚去边？广州K11开业地图带你闯关光感革新之旅',
+                desc: '今晚去边？闯关六大主题空间，完成任务，点亮地图即可体验K11开业首展',
+                link: location.href.split('#')[0],
+                imgUrl: 'https://static.cdn.24haowan.com/img/32/32152090772391067.jpg'
+            };
+            wx.setWxShare(wxShareObj, () => {
+                this.$bus.$emit('shareCallback');
             });
-            return `${url}?${dataArr.join('&')}`;
         },
+        // 解析K11的返回数据
         decodeReturnData(str) {
             let result = str;
             const skey = this.envData.skey;
@@ -339,6 +398,41 @@ export default {
                 console.error(error);
             }
             return temp2;
+        },
+        // 获取是否为会员
+        getIsMember() {
+            axios({
+                method: 'get',
+                url: `${this.envData.host24}/member/isMember`
+            }).then((response) => {
+                const result = response.data;
+                if (result.code === 0) {
+                    if (result.data.isMember === 1) {
+                        this.isMember = true;
+                    }
+                }
+            });
+        },
+        // 获取地图标记信息
+        getFloorComplete() {
+            axios({
+                method: 'get',
+                url: `${this.envData.host24}/member/markAll`
+            }).then((response) => {
+                const result = response.data;
+                if (result.code === 0) {
+                    if (result.data.markAll === 1) { // 全部标记
+                        this.$bus.$emit('showGiftButton');
+                    }
+                    const mark = result.data.mark;
+                    if (mark.location1 === 'yes') this.$bus.$emit('goal', 1);
+                    if (mark.location2 === 'yes') this.$bus.$emit('goal', 2);
+                    if (mark.location3 === 'yes') this.$bus.$emit('goal', 3);
+                    if (mark.location4 === 'yes') this.$bus.$emit('goal', 4);
+                    if (mark.location5 === 'yes') this.$bus.$emit('goal', 5);
+                    if (mark.location6 === 'yes') this.$bus.$emit('goal', 6);
+                }
+            });
         }
     },
     mounted() {
@@ -346,11 +440,11 @@ export default {
         this.initAudios();
         this.initEvents();
         this.load();
-        // this.getWxConfig();
+        this.getWxConfig();
+        this.getIsMember();
+        this.getFloorComplete();
         window.bus = this.$bus;
         window.app = this;
-
-        console.log(this.decodeReturnData('e2y1Jdjab120R9l0IjowLCJtc2ciOiLmiJDlip8iLCJkYXRhIjp7ImRlYnVnIjpmYWxzZSwiYXBwSWQiOiJ3eDBmNWRjYTgwYTJmZTRlNGEiLCJ0aW1lc3RhbXAiOjE1MjA4NTk1NDIsIm5vbmNlU3RyIjoiNWFhNjc5OTYwMDViMyIsInNpZ25hdHVyZSI6ImI2OGY2M2IwNDIwYWNlMjY2MWIxMTYzODYxNTQ2Yzc5MWM4ZjU5MDEiLCJqc0FwaUxpc3QiOlsiaGlkZU9wdGlvbk1lbnUiLCJzaG93T3B0aW9uTWVudSIsImNsb3NlV2luZG93IiwiYWRkQ2FyZCIsImNob29zZUNhcmQiLCJvcGVuQ2FyZCJdfX0mbscd'));
     }
 };
 </script>

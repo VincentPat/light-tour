@@ -82,7 +82,12 @@ export default {
             imgOn: 'https://static.cdn.24haowan.com/img/32/32152051868661185.png',
             imgOff: 'https://static.cdn.24haowan.com/img/32/32152051868551902.png',
             swiperOption: {
-                direction: 'vertical'
+                direction: 'vertical',
+                on: {
+                    slideNextTransitionStart: () => {
+                        this.$bus.$emit('slideChange', this.swiper.activeIndex);
+                    }
+                }
             }
         };
     },
