@@ -67,7 +67,7 @@ export default {
     },
     data() {
         return {
-            isMember: false, // 是否为会员
+            isMember: true, // 是否为会员
             progress: 0, // 加载进度
             timestamp: Date.now(), // 进入页面的时间
             envData: {}, // 运行环境参数
@@ -185,12 +185,12 @@ export default {
                     }
                 });
             });
-            this.$bus.$on('scanSuccess', (result) => {
+            this.$bus.$on('scanSuccess', (str) => {
                 axios({
                     method: 'get',
                     url: `${this.envData.host24}/member/markLocation`,
                     params: {
-                        str: result
+                        str
                     }
                 }).then((response) => {
                     this.$bus.$emit('hideFloorDesc');
@@ -199,6 +199,7 @@ export default {
                         this.$bus.$emit('goal', this.currentFloor);
                     }
                 }).catch((error) => {
+                    console.error(error);
                     this.$bus.$emit('hideFloorDesc');
                 });
             });
