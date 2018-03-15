@@ -41,22 +41,31 @@ export default {
             if (!this.active) {
                 this.$bus.$emit('showFloorDesc', 3);
             }
+        },
+        showLight() {
+            const light = document.querySelectorAll('.floor3__light')[0];
+            light.style.opacity = '1';
+            setTimeout(() => {
+                light.className += ' active';
+                light.style.opacity = '0';
+                setTimeout(() => {
+                    light.className = light.className.replace(' active', '');
+                }, 1000);
+            }, 50);
+        },
+        startShowLight() {
+            const timeout = 2000 + Math.random() * 2000;
+            setTimeout(() => {
+                this.showLight();
+                this.startShowLight();
+            }, timeout);
         }
     },
     mounted() {
         this.$bus.$on('goal', (no) => {
-            if (no === 3) {
-                const light = document.querySelectorAll('.floor3__light')[0];
-                light.style.opacity = '1';
-                setTimeout(() => {
-                    light.className += ' active';
-                    light.style.opacity = '0';
-                    setTimeout(() => {
-                        this.active = true;
-                    }, 800);
-                }, 50);
-            }
+            if (no === 3) this.active = true;
         });
+        this.startShowLight();
     }
 };
 </script>

@@ -6,7 +6,7 @@
             class="homepage__light">
         <img src="https://static.cdn.24haowan.com/img/32/32152068822683762.png"
             class="homepage__line">
-        <img src="https://static.cdn.24haowan.com/img/32/32152051869532387.png"
+        <img src="https://static.cdn.24haowan.com/img/32/3215210860219432.png"
             class="homepage__title">
         <div class="homepage__gift"
             v-show="showGift"

@@ -19,9 +19,8 @@
                 :class="{ active }">
         </div>
         <transition name="fade">
-            <img class="floor4__animal"
-                src="https://static.cdn.24haowan.com/img/32/32152076022334105.png"
-                v-show="active">
+            <img class="floor4__animal bling"
+                src="https://static.cdn.24haowan.com/img/32/32152076022334105.png">
         </transition>
         <transition name="fade">
             <img src="https://static.cdn.24haowan.com/img/32/32152056922159093.png"
@@ -97,6 +96,7 @@ export default {
         top: 14%;
         left: 28%;
         width: 46vw;
+        animation-duration: 1s;
     }
     &__achieve {
         position: absolute;

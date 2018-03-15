@@ -1,6 +1,6 @@
 <template>
     <div class="share" @click="hideShare">
-        <img src="https://static.cdn.24haowan.com/img/32/32152077169074578.png"
+        <img src="https://static.cdn.24haowan.com/img/32/3215210874493342.png"
             class="share__img">
     </div>
 </template>

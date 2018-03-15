@@ -86,7 +86,7 @@ export default {
             floorDescData, // 楼层介绍数据
             // 奖品名称
             prizeName: '广州K11艺术展览九折优惠券一张',
-            prizeImg: 'https://static.cdn.24haowan.com/img/32/32152076305274928.png',
+            prizeImg: 'https://static.cdn.24haowan.com/img/32/32152100787513264.jpg',
             // 模态框
             showLoading: true,
             showHome: false,
@@ -111,6 +111,7 @@ export default {
                     apiSecret: 'rAoV68K4',
                     interfaceId: 'fb9cff6e93ff6342f066',
                     skey: '21da1090',
+                    cardId: 'pC2Vgv8HOaMpzoY8v9MH9TTi3AOc',
                     host24: 'http://test.ac.24haowan.com'
                 };
             } else if (this.env === 'production') {
@@ -121,6 +122,7 @@ export default {
                     apiSecret: 'rAoV68K4',
                     interfaceId: 'fb9cff6e93ff6342f066',
                     skey: '21da1090',
+                    cardId: 'pC2Vgv8HOaMpzoY8v9MH9TTi3AOc',
                     host24: 'http://api.24haowan.com'
                 };
             }
@@ -248,8 +250,10 @@ export default {
             });
             // 获得奖品
             this.$bus.$on('getCompletePrize', () => {
-                this.$bus.$emit('hideComplete');
-                this.$bus.$emit('showGetPrize');
+                this.addCard(() => {
+                    this.$bus.$emit('hideComplete');
+                    this.$bus.$emit('showGetPrize');
+                });
             });
             this.$bus.$on('showGetPrize', () => {
                 this.showGetPrize = true;
@@ -344,17 +348,19 @@ export default {
         getWxConfig() {
             const url = `${this.envData.host}/v1/wechat-js/js-config`;
             const timestamp = Date.now();
+            const params = {
+                apiKey: this.envData.apiKey,
+                interfaceId: this.envData.interfaceId,
+                timestamp,
+                account_id: this.envData.account_id,
+                domain_url: location.href.split('#')[0]
+            };
+            const sign = this.genSign(params);
+            params.sign = sign;
             axios({
                 method: 'get',
                 url,
-                params: {
-                    apiKey: this.envData.apiKey,
-                    interfaceId: this.envData.interfaceId,
-                    timestamp,
-                    sign: 'ABC',
-                    account_id: this.envData.account_id,
-                    domain_url: location.href.split('#')[0]
-                },
+                params,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -418,6 +424,18 @@ export default {
             }
             return temp2;
         },
+        // 生成签名
+        genSign(params) {
+            const data = Object.assign({
+                apiSecret: this.envData.apiSecret
+            }, params);
+            let paramStr = '';
+            const keys = Object.keys(data).sort();
+            keys.forEach((key) => {
+                paramStr = `${paramStr}${key}+${data[key]}`;
+            });
+            return md5(paramStr);
+        },
         // 获取是否为会员
         getIsMember() {
             axios({
@@ -451,6 +469,39 @@ export default {
                     if (mark.location5 === 'yes') this.$bus.$emit('goal', 5);
                     if (mark.location6 === 'yes') this.$bus.$emit('goal', 6);
                 }
+            });
+        },
+        // 添加卡券
+        addCard(callback) {
+            const url = `${this.envData.host}/v1/wechat-js/card-ext-config`;
+            const timestamp = Date.now();
+            const params = {
+                apiKey: this.envData.apiKey,
+                interfaceId: this.envData.interfaceId,
+                timestamp,
+                account_id: this.envData.account_id,
+                cardId: this.envData.cardId
+            };
+            const sign = this.genSign(params);
+            params.sign = sign;
+            axios({
+                method: 'get',
+                url,
+                params,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then((response) => {
+                const result = this.decodeReturnData(response.data);
+                const cardList = result.data;
+                window.wx.addCard({
+                    cardList, // 需要添加的卡券列表
+                    success: () => {
+                        if (typeof callback === 'function') callback();
+                    }
+                });
+            }).catch((error) => {
+                console.error(error);
             });
         }
     },
