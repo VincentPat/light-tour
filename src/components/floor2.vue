@@ -23,7 +23,7 @@
         <div class="floor2__name"
             @click="showInfo">
             <img src="https://static.cdn.24haowan.com/img/32/32152068874137571.png"
-                class="before"
+                class="before animated infinite pulse"
                 :class="{ active }">
             <img src="https://static.cdn.24haowan.com/img/32/32152075997634510.png"
                 class="after"
@@ -33,11 +33,6 @@
             <img src="https://static.cdn.24haowan.com/img/32/32152056922596263.png"
                 class="floor2__achieve"
                 v-show="active">
-        </transition>
-        <transition name="fade">
-            <img src="https://static.cdn.24haowan.com/img/32/3215205692236479.png"
-                class="floor2__guide wanderVer"
-                v-show="!active">
         </transition>
     </div>
 </template>
@@ -138,12 +133,6 @@ export default {
         top: 6%;
         left: 38%;
         width: 28vw;
-    }
-    &__guide {
-        position: absolute;
-        top: 79%;
-        left: 25%;
-        width: 6vw;
     }
 }
 

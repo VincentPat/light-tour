@@ -1,11 +1,11 @@
 <template>
-    <div class="goal">
-        <div class="goal__cnt">
+    <div class="point">
+        <div class="point__cnt">
             <img src="https://static.cdn.24haowan.com/img/32/32152083519747602.png"
-                class="goal__cnt__img">
-            <div class="goal__cnt__text">
-                <div>成功点亮关卡</div>
-                <div>获得50互动积分</div>
+                class="point__cnt__img">
+            <div class="point__cnt__text">
+                <div v-html="reason"></div>
+                <div v-html="point"></div>
             </div>
         </div>
     </div>
@@ -13,7 +13,24 @@
 
 <script>
 export default {
-    name: 'goal'
+    name: 'point',
+    data() {
+        return {
+            reason: '成功点亮关卡',
+            point: '获得10互动积分'
+        };
+    },
+    mounted() {
+        this.$bus.$on('showPoint', (type) => {
+            if (type === 'share') { // 分享
+                this.reason = '分享成功';
+                this.point = '获得50互动积分';
+            } else {
+                this.reason = '成功点亮关卡';
+                this.point = '获得10互动积分';
+            }
+        });
+    }
 };
 </script>
 
@@ -21,7 +38,7 @@ export default {
 @import '../style/mixin.scss';
 @import '../style/color.scss';
 
-.goal {
+.point {
     @include fullscreen;
     @include box;
     z-index: 100;

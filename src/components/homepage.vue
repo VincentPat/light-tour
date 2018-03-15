@@ -68,8 +68,9 @@ export default {
     &__title {
         position: absolute;
         left: 6vw;
-        top: 24vw;
+        top: 50%;
         width: 80vw;
+        transform: translate(0, -70%);
     }
     &__gift {
         @include bg-contain;

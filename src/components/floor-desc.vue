@@ -1,5 +1,5 @@
 <template>
-    <div class="floor-desc">
+    <div class="floor-desc" @touchmove.stop.prevent>
         <div class="floor-desc__cnt">
             <div class="floor-desc__cnt__desc">
                 <img src="https://static.cdn.24haowan.com/img/32/32152077606189344.png"
@@ -75,7 +75,7 @@ export default {
 .floor-desc {
     @include fullscreen;
     @include box;
-    z-index: 100;
+    z-index: 200;
     background: $c-mask-blue;
     &__cnt {
         width: 86vw;

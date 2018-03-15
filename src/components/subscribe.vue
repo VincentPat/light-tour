@@ -14,10 +14,26 @@
 <script>
 export default {
     name: 'subscribe',
+    data() {
+        return {
+            callback: null
+        };
+    },
     methods: {
         hideSubscribe() {
             this.$bus.$emit('hideSubscribe');
+            setTimeout(() => {
+                if (typeof this.callback === 'function') {
+                    this.callback();
+                    this.callback = null;
+                }
+            }, 400);
         }
+    },
+    mounted() {
+        this.$bus.$on('showSubscribe', (callback) => {
+            this.callback = callback;
+        });
     }
 };
 </script>

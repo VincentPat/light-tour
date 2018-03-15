@@ -6,6 +6,7 @@ import '@/style/swiper.css';
 import '@/style/main.scss';
 import '@/style/vue-transition.scss';
 import '@/style/animation.scss';
+import '@/style/animate.css';
 import bus from '@/plugin/bus';
 import App from './App';
 

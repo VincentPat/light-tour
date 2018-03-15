@@ -19,7 +19,7 @@
             </floor-desc>
         </transition>
         <transition name="fade">
-            <goal v-show="showGoal"></goal>
+            <point v-show="showPoint"></point>
         </transition>
         <transition name="fade">
             <scan-error v-show="showScanError"></scan-error>
@@ -43,7 +43,7 @@ import share from '@/components/share';
 import subscribe from '@/components/subscribe';
 import floorDesc from '@/components/floor-desc';
 import floorDescData from '@/floor-desc-data';
-import goal from '@/components/goal';
+import point from '@/components/point';
 import scanError from '@/components/scan-error';
 import complete from '@/components/complete';
 import getPrize from '@/components/get-prize';
@@ -60,7 +60,7 @@ export default {
         share,
         subscribe,
         floorDesc,
-        goal,
+        point,
         scanError,
         complete,
         getPrize
@@ -93,7 +93,7 @@ export default {
             showShare: false,
             showSubscribe: false,
             showFloorDesc: false,
-            showGoal: false,
+            showPoint: false,
             showScanError: false,
             showComplete: false,
             showGetPrize: false,
@@ -217,7 +217,7 @@ export default {
             // 点亮成功
             this.$bus.$on('goal', (no) => {
                 if (this.completedFloors.indexOf(no) === -1) this.completedFloors.push(no);
-                this.$bus.$emit('showGoal');
+                this.$bus.$emit('showPoint', 'goal');
                 this.playMusic('goal');
                 if (this.completedFloors.length >= 6) { // 全部完成
                     setTimeout(() => {
@@ -225,14 +225,14 @@ export default {
                     }, 3500);
                 }
             });
-            this.$bus.$on('showGoal', () => {
-                this.showGoal = true;
+            this.$bus.$on('showPoint', () => {
+                this.showPoint = true;
                 setTimeout(() => {
-                    this.$bus.$emit('hideGoal');
+                    this.$bus.$emit('hidePoint');
                 }, 3000);
             });
-            this.$bus.$on('hideGoal', () => {
-                this.showGoal = false;
+            this.$bus.$on('hidePoint', () => {
+                this.showPoint = false;
             });
             // 完全通关
             this.$bus.$on('complete', () => {
@@ -265,6 +265,10 @@ export default {
             document.addEventListener('WeixinJSBridgeReady', () => {
                 this.playMusic('bg');
             });
+            // 自动播放音乐
+            document.body.addEventListener('touchstart', () => {
+                this.playMusic('bg');
+            });
             // 分享回调
             this.$bus.$on('shareCallback', () => {
                 this.$bus.$emit('hideShare');
@@ -274,17 +278,27 @@ export default {
                 }).then((response) => {
                     const result = response.data;
                     if (result.code === 0) {
+                        let callback = null;
+                        if (result.data.sendPoint === 'yes') { // 已发放积分，每天限定两次
+                            callback = () => {
+                                this.$bus.$emit('showPoint', 'share');
+                            };
+                        }
                         if (result.data.isSubscribe === 0) { // 未关注公众号
-                            this.$bus.$emit('showSubscribe');
+                            this.$bus.$emit('showSubscribe', callback);
+                        } else if (typeof callback === 'function') {
+                            callback();
                         }
                     }
                 });
             });
             // 滑动页面
-            this.$bus.$on('slideChange', (activeIndex) => {
-                console.log(activeIndex);
+            this.$bus.$on('slideChange', ({ activeIndex, callback }) => {
                 if (activeIndex >= 2 && !this.isMember) {
-                    location.href = 'http://www.baidu.com';
+                    location.href = 'https://app.klub11.com/?r=page/auth&account_id=6&origin=7&css=2&_redirecturl=http%3A%2F%2Fwww.baidu.com';
+                }
+                if (activeIndex === 2 && this.isMember) {
+                    callback();
                 }
             });
         },
@@ -309,7 +323,11 @@ export default {
             });
         },
         playMusic(key) {
-            if (key in this.audios && !this.muted) this.audios[key].play();
+            if (key in this.audios
+                && this.audios[key].paused
+                && !this.muted) {
+                this.audios[key].play();
+            }
         },
         pauseMusic() {
             this.audios.bg.pause();
