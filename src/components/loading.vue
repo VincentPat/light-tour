@@ -38,7 +38,7 @@ export default {
     @include fullscreen;
     @include bg-cover;
     background-position: center top;
-    background-image: url('https://static.cdn.24haowan.com/img/32/32152068781178304.png');
+    background-image: url('https://static.cdn.24haowan.com/img/32/32152110787295334.png');
     z-index: 100;
     &__progress {
         @include transform-center;

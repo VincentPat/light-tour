@@ -27,6 +27,7 @@
             </div>
             <div class="floor-desc__cnt__remind">
                 <div>现场完成任务后</div>
+                <br>
                 <div>请找任务点工作人员扫码认证</div>
             </div>
             <img src="https://static.cdn.24haowan.com/img/32/32152077606239212.png"
@@ -78,7 +79,7 @@ export default {
     z-index: 200;
     background: $c-mask-blue;
     &__cnt {
-        width: 86vw;
+        width: 90vw;
         color: $c-greenblue;
         &__desc {
             @include bg-contain;
@@ -130,6 +131,7 @@ export default {
                 ul {
                     margin: 0;
                     font-size: .14rem;
+                    padding-left: .24rem;
                 }
             }
             &__address {

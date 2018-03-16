@@ -2,7 +2,7 @@
     <div class="homepage">
         <img class="homepage__logo"
             src="https://static.cdn.24haowan.com/img/32/32152051868757390.png">
-        <img src="https://static.cdn.24haowan.com/img/32/32152068822684683.png"
+        <img src="https://static.cdn.24haowan.com/img/32/32152109741297338.png"
             class="homepage__light">
         <img src="https://static.cdn.24haowan.com/img/32/32152068822683762.png"
             class="homepage__line">
@@ -35,6 +35,9 @@ export default {
         this.$bus.$on('showGiftButton', () => {
             this.showGift = true;
         });
+        this.$bus.$on('hideGiftButton', () => {
+            this.showGift = false;
+        });
     }
 };
 </script>
@@ -55,9 +58,10 @@ export default {
     }
     &__light {
         position: absolute;
-        bottom: 0;
         left: 0;
+        top: 50%;
         width: 100vw;
+        transform: translate(0, -50%);
     }
     &__line {
         position: absolute;

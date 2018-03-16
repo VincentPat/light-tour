@@ -37,6 +37,11 @@
         <img src="https://static.cdn.24haowan.com/img/32/32152076305274928.png"
             class="floor6__share"
             @click="showShare">
+        <transition name="fade">
+            <img src="https://static.cdn.24haowan.com/img/32/3215205692236479.png"
+                class="floor6__guide wanderVer"
+                v-show="!active">
+        </transition>
     </div>
 </template>
 
@@ -183,6 +188,12 @@ export default {
             left: 50%;
             transform: translate(0, 0) scale(.01, .01);
         }
+    }
+    &__guide {
+        position: absolute;
+        top: 80%;
+        right: 20%;
+        width: 6vw;
     }
     &__achieve {
         position: absolute;

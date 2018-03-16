@@ -67,6 +67,7 @@ export default {
     },
     data() {
         return {
+            hasGotPrize: false, // 是否已经获得奖品
             isMember: true, // 是否为会员
             progress: 0, // 加载进度
             timestamp: Date.now(), // 进入页面的时间
@@ -74,7 +75,8 @@ export default {
             imgs: [], // 图片
             audios: {}, // 音频
             audiosSrc: {
-                bg: 'https://static.cdn.24haowan.com/music/32/321520852919.mp3',
+                // bg: 'https://static.cdn.24haowan.com/music/32/321520852919.mp3',
+                bg: 'https://24haowan-cdn.shanyougame.com/dingzhi/k11-light-tour/bgm.mp3',
                 click: 'https://static.cdn.24haowan.com/music/32/321520853009.mp3',
                 goal: 'https://static.cdn.24haowan.com/music/32/321520853048.mp3',
                 prize: 'https://static.cdn.24haowan.com/music/32/321520853075.mp3'
@@ -116,12 +118,12 @@ export default {
                 };
             } else if (this.env === 'production') {
                 this.envData = {
-                    host: 'https://api.klub11.com',
+                    host: 'http://lighttour-v.klub11.com',
                     account_id: '6',
-                    apiKey: '271151990342466',
-                    apiSecret: 'rAoV68K4',
-                    interfaceId: 'fb9cff6e93ff6342f066',
-                    skey: '21da1090',
+                    apiKey: '155152110859733',
+                    apiSecret: 'C7IZh37L',
+                    interfaceId: 'a4e1d7e32123751f911a',
+                    skey: 'b1603307',
                     cardId: 'pC2Vgv8HOaMpzoY8v9MH9TTi3AOc',
                     host24: 'http://api.24haowan.com'
                 };
@@ -218,10 +220,13 @@ export default {
             });
             // 点亮成功
             this.$bus.$on('goal', (no) => {
-                if (this.completedFloors.indexOf(no) === -1) this.completedFloors.push(no);
-                this.$bus.$emit('showPoint', 'goal');
-                this.playMusic('goal');
-                if (this.completedFloors.length >= 6) { // 全部完成
+                if (this.completedFloors.indexOf(no) === -1) {
+                    this.completedFloors.push(no);
+                    this.playMusic('goal');
+                    this.$bus.$emit('showPoint', 'goal');
+                }
+                if (this.completedFloors.length >= 5
+                    && !this.hasGotPrize) { // 达成条件
                     setTimeout(() => {
                         this.$bus.$emit('complete');
                     }, 3500);
@@ -250,7 +255,10 @@ export default {
             });
             // 获得奖品
             this.$bus.$on('getCompletePrize', () => {
+                /* eslint no-underscore-dangle: "off" */
+                window._hmt.push(['_trackEvent', 'button', 'click', 'GetPrize']);
                 this.addCard(() => {
+                    this.hasGotPrize = true;
                     this.$bus.$emit('hideComplete');
                     this.$bus.$emit('showGetPrize');
                 });
@@ -275,6 +283,7 @@ export default {
             });
             // 分享回调
             this.$bus.$on('shareCallback', () => {
+                window._hmt.push(['_trackEvent', 'share', 'share', 'share']);
                 this.$bus.$emit('hideShare');
                 axios({
                     method: 'get',
@@ -299,12 +308,16 @@ export default {
             // 滑动页面
             this.$bus.$on('slideChange', ({ activeIndex, callback }) => {
                 if (activeIndex >= 2 && !this.isMember) {
-                    location.href = 'https://app.klub11.com/?r=page/auth&account_id=6&origin=7&css=2&_redirecturl=http%3A%2F%2Fwww.baidu.com';
+                    location.href = `https://app.klub11.com/?r=page/auth&account_id=6&origin=7&css=2&_redirecturl=${encodeURIComponent(location.href.split('#')[0])}`;
                 }
                 if (activeIndex === 2 && this.isMember) {
                     callback();
                 }
             });
+            // 页面加载完毕
+            window.onload = () => {
+                this.$bus.$emit('progress', 20);
+            };
         },
         // 加载
         load() {
@@ -312,7 +325,7 @@ export default {
             imgs.forEach((img) => {
                 const tmp = new Image();
                 tmp.onload = () => {
-                    this.$bus.$emit('progress', 1 / imgs.length * 80);
+                    this.$bus.$emit('progress', 1 / imgs.length * 60);
                 };
                 tmp.src = img.src;
             });
@@ -458,16 +471,60 @@ export default {
             }).then((response) => {
                 const result = response.data;
                 if (result.code === 0) {
-                    if (result.data.markAll === 1) { // 全部标记
-                        this.$bus.$emit('showGiftButton');
-                    }
+                    // if (result.data.markAll === 1) { // 全部标记
+                    //     this.$bus.$emit('showGiftButton');
+                    // }
                     const mark = result.data.mark;
-                    if (mark.location1 === 'yes') this.$bus.$emit('goal', 1);
-                    if (mark.location2 === 'yes') this.$bus.$emit('goal', 2);
-                    if (mark.location3 === 'yes') this.$bus.$emit('goal', 3);
-                    if (mark.location4 === 'yes') this.$bus.$emit('goal', 4);
-                    if (mark.location5 === 'yes') this.$bus.$emit('goal', 5);
-                    if (mark.location6 === 'yes') this.$bus.$emit('goal', 6);
+                    let count = 0;
+                    Object.keys(mark).forEach((key) => {
+                        if (mark[key] === 'yes') count += 1;
+                    });
+                    if (count >= 5) { // 已达成条件
+                        const url = `${this.envData.host}/v1/wechat-js/user-card-list`;
+                        const timestamp = Date.now();
+                        const params = {
+                            apiKey: this.envData.apiKey,
+                            interfaceId: this.envData.interfaceId,
+                            timestamp,
+                            account_id: this.envData.account_id
+                        };
+                        let openid = location.href.match(/openid=\w+/ig)[0];
+                        openid = openid.substr(7);
+                        const data = {
+                            cardId: this.envData.cardId,
+                            openid
+                        };
+                        const sign = this.genSign(Object.assign({}, params, data));
+                        params.sign = sign;
+                        axios({
+                            method: 'POST',
+                            url,
+                            params,
+                            data,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        }).then((response2) => {
+                            const result2 = this.decodeReturnData(response2.data);
+                            const cardList = result2.data;
+                            if (cardList.length > 0) { // 已领取
+                                this.$bus.$emit('hideGiftButton');
+                                this.hasGotPrize = true;
+                            } else {
+                                this.$bus.$emit('showGiftButton');
+                            }
+                        }).catch((error) => {
+                            console.error(error);
+                        });
+                    } else {
+                        this.$bus.$emit('hideGiftButton');
+                    }
+                    if (mark.location1 === 'yes') this.completedFloors.push(1);
+                    if (mark.location2 === 'yes') this.completedFloors.push(2);
+                    if (mark.location3 === 'yes') this.completedFloors.push(3);
+                    if (mark.location4 === 'yes') this.completedFloors.push(4);
+                    if (mark.location5 === 'yes') this.completedFloors.push(5);
+                    if (mark.location6 === 'yes') this.completedFloors.push(6);
                 }
             });
         },
@@ -521,7 +578,6 @@ export default {
 
 <style>
 #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;

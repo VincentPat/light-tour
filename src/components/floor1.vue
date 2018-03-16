@@ -23,6 +23,11 @@
                 class="floor1__achieve"
                 v-show="active">
         </transition>
+        <transition name="fade">
+            <img src="https://static.cdn.24haowan.com/img/32/3215205692236479.png"
+                class="floor1__guide wanderVer"
+                v-show="!active">
+        </transition>
     </div>
 </template>
 
@@ -93,6 +98,12 @@ export default {
         top: 0;
         left: 22%;
         width: 28vw;
+    }
+    &__guide {
+        position: absolute;
+        top: 66%;
+        right: 10%;
+        width: 6vw;
     }
 }
 </style>

@@ -25,6 +25,11 @@
                 class="floor3__achieve"
                 v-show="active">
         </transition>
+        <transition name="fade">
+            <img src="https://static.cdn.24haowan.com/img/32/3215205692236479.png"
+                class="floor3__guide wanderVer"
+                v-show="!active">
+        </transition>
     </div>
 </template>
 
@@ -118,6 +123,12 @@ export default {
         top: 63%;
         right: 13%;
         width: 28vw;
+    }
+    &__guide {
+        position: absolute;
+        top: 85%;
+        right: 13%;
+        width: 6vw;
     }
     &__achieve {
         position: absolute;
