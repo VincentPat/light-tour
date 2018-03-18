@@ -50,7 +50,6 @@ import getPrize from '@/components/get-prize';
 import wx from '@/plugin/wx';
 import axios from 'axios';
 import md5 from 'md5';
-import { Base64 } from 'js-base64';
 
 export default {
     name: 'App',
