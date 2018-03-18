@@ -102,7 +102,8 @@ export default {
     methods: {
         // 初始化环境数据
         initEnvData() {
-            this.env = location.host.match(/api.24haowan.com/ig) ? 'production' : 'test';
+            // this.env = location.host.match(/api.24haowan.com/ig) ? 'production' : 'test';
+            this.env = 'production';
             if (this.env === 'test') {
                 this.envData = {
                     cardId: 'pC2Vgv8HOaMpzoY8v9MH9TTi3AOc',
@@ -111,7 +112,7 @@ export default {
             } else if (this.env === 'production') {
                 this.envData = {
                     cardId: 'pC2Vgv8HOaMpzoY8v9MH9TTi3AOc',
-                    host24: 'http://api.24haowan.com'
+                    host24: 'http://lighttour-v.klub11.com'
                 };
             }
         },
@@ -162,7 +163,7 @@ export default {
             });
             // 扫描
             this.$bus.$on('scan', () => {
-                wx.scanQRCode({
+                window.wx.scanQRCode({
                     needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
                     scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
                     success: (res) => {
@@ -185,8 +186,11 @@ export default {
                 }).then((response) => {
                     this.$bus.$emit('hideFloorDesc');
                     const result = response.data;
+                    console.log(result);
                     if (result.code === 0) {
-                        this.$bus.$emit('goal', this.currentFloor);
+                        this.$bus.$emit('goal', {
+                            no: this.currentFloor
+                        });
                     }
                 }).catch((error) => {
                     console.error(error);
@@ -205,14 +209,17 @@ export default {
                 this.showScanError = false;
             });
             // 点亮成功
-            this.$bus.$on('goal', (no) => {
+            this.$bus.$on('goal', ({ no, initial }) => {
                 if (this.completedFloors.indexOf(no) === -1) {
                     this.completedFloors.push(no);
-                    this.playMusic('goal');
-                    this.$bus.$emit('showPoint', 'goal');
+                    if (!initial) {
+                        this.playMusic('goal');
+                        this.$bus.$emit('showPoint', 'goal');
+                    }
                 }
                 if (this.completedFloors.length >= 5
-                    && !this.hasGotPrize) { // 达成条件
+                    && !this.hasGotPrize
+                    && !initial) { // 达成条件
                     setTimeout(() => {
                         this.$bus.$emit('complete');
                     }, 3500);
@@ -276,6 +283,7 @@ export default {
                     url: `${this.envData.host24}/member/share`
                 }).then((response) => {
                     const result = response.data;
+                    console.log(result);
                     if (result.code === 0) {
                         let callback = null;
                         if (result.data.sendPoint === 'yes') { // 已发放积分，每天限定两次
@@ -347,7 +355,8 @@ export default {
         getWxConfig() {
             const url = `${this.envData.host24}/jssdk/jssdkParams`;
             const params = {
-                gameName: 'lightTour'
+                gameName: 'lightTour',
+                domainUrl: location.href.split('#')[0]
             };
             axios({
                 method: 'get',
@@ -355,6 +364,7 @@ export default {
                 params
             }).then((response) => {
                 const result = response.data;
+                console.log(result);
                 const config = result.data;
                 this.setWx(config);
             }).catch((error) => {
@@ -370,7 +380,7 @@ export default {
             const wxShareObj = {
                 title: '今晚去边？广州K11开业地图带你闯关光感革新之旅',
                 desc: '今晚去边？闯关六大主题空间，完成任务，点亮地图即可体验K11开业首展',
-                link: location.href.split('#')[0],
+                link: 'http://lighttour-v.klub11.com/games/k11LightTour/1',
                 imgUrl: 'https://static.cdn.24haowan.com/img/32/32152090772391067.jpg'
             };
             wx.setWxShare(wxShareObj, () => {
@@ -384,6 +394,7 @@ export default {
                 url: `${this.envData.host24}/member/isMember`
             }).then((response) => {
                 const result = response.data;
+                console.log(result);
                 if (result.code === 0) {
                     if (result.data.isMember === 1) {
                         this.isMember = true;
@@ -398,6 +409,7 @@ export default {
                 url: `${this.envData.host24}/member/markAll`
             }).then((response) => {
                 const result = response.data;
+                console.log(result);
                 if (result.code === 0) {
                     const mark = result.data.mark;
                     let count = 0;
@@ -409,12 +421,12 @@ export default {
                     } else {
                         this.$bus.$emit('hideGiftButton');
                     }
-                    if (mark.location1 === 'yes') this.completedFloors.push(1);
-                    if (mark.location2 === 'yes') this.completedFloors.push(2);
-                    if (mark.location3 === 'yes') this.completedFloors.push(3);
-                    if (mark.location4 === 'yes') this.completedFloors.push(4);
-                    if (mark.location5 === 'yes') this.completedFloors.push(5);
-                    if (mark.location6 === 'yes') this.completedFloors.push(6);
+                    if (mark.location1 === 'yes') this.$bus.$emit('goal', { no: 1, initial: true });
+                    if (mark.location2 === 'yes') this.$bus.$emit('goal', { no: 2, initial: true });
+                    if (mark.location3 === 'yes') this.$bus.$emit('goal', { no: 3, initial: true });
+                    if (mark.location4 === 'yes') this.$bus.$emit('goal', { no: 4, initial: true });
+                    if (mark.location5 === 'yes') this.$bus.$emit('goal', { no: 5, initial: true });
+                    if (mark.location6 === 'yes') this.$bus.$emit('goal', { no: 6, initial: true });
                 }
             });
         },
@@ -431,6 +443,7 @@ export default {
                 params
             }).then((response) => {
                 const result = response.data;
+                console.log(result);
                 const cardList = result.data;
                 if (cardList.length > 0) { // 已领取
                     this.$bus.$emit('hideGiftButton');
@@ -455,6 +468,7 @@ export default {
                 params
             }).then((response) => {
                 const result = response.data;
+                console.log(result);
                 const cardList = result.data;
                 window.wx.addCard({
                     cardList, // 需要添加的卡券列表

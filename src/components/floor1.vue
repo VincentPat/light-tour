@@ -47,7 +47,7 @@ export default {
         }
     },
     mounted() {
-        this.$bus.$on('goal', (no) => {
+        this.$bus.$on('goal', ({ no }) => {
             if (no === 1) this.active = true;
         });
     }

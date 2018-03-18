@@ -107,7 +107,7 @@ export default {
     mounted() {
         this.noteCnt = document.querySelectorAll('.floor6__note')[0];
         this.showNote();
-        this.$bus.$on('goal', (no) => {
+        this.$bus.$on('goal', ({ no }) => {
             if (no === 6) this.active = true;
         });
     }
