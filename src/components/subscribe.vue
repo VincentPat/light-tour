@@ -49,6 +49,7 @@ export default {
     z-index: 100;
     &__cnt {
         text-align: center;
+        font-family: 'CNB';
         &__qrcode {
             width: 34vw;
             display: block;
@@ -60,6 +61,7 @@ export default {
             color: $c-greenblue;
             p {
                 margin: 0;
+                margin-bottom: .06rem;
             }
         }
     }

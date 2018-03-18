@@ -25,28 +25,31 @@ iframe,
     left: -10000px!important;
 }
 
+// 中文细
 @font-face {
-    font-family: 'F1';
-    src: url('https://24haowan-cdn.shanyougame.com/dingzhi/k11-light-tour/fonts/SourceHanSansCN-Heavy.otf');
+    font-family: 'CN';
+    src: url('https://24haowan-cdn.shanyougame.com/dingzhi/k11-light-tour/fonts/LT.TTF');
+    font-weight: normal;
+    font-style: normal;
+}
+// 中文粗
+@font-face {
+    font-family: 'CNB';
+    src: url('https://24haowan-cdn.shanyougame.com/dingzhi/k11-light-tour/fonts/LTC.TTF');
     font-weight: bold;
     font-style: normal;
 }
+// 英文细
 @font-face {
-    font-family: 'F2';
+    font-family: 'EN';
     src: url('https://24haowan-cdn.shanyougame.com/dingzhi/k11-light-tour/fonts/Frutiger-LT-57-Condensed.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
+// 英文粗
 @font-face {
-    font-family: 'F3';
+    font-family: 'ENB';
     src: url('https://24haowan-cdn.shanyougame.com/dingzhi/k11-light-tour/fonts/Frutiger-LT-77-Black-Condensed.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
 }
-
-
-
-html, body {
-    font-family: 'F3', 'F2', 'F1';
-}
-    

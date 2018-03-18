@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="home" @touchmove.stop>
         <swiper :options="swiperOption"
             ref="swiper"
             class="home__swiper"
@@ -137,9 +137,7 @@ export default {
         });
         const floors = document.querySelectorAll('.home__floors')[0];
         floors.addEventListener('scroll', () => {
-            // if ((floors.scrollTop === 0 && this.lastScroll > 0)
-            //     || floors.scrollTop < -20) {
-            if (floors.scrollTop < -20) {
+            if (floors.scrollTop < -40) {
                 this.showFloors = false;
                 this.showSwiper = true;
                 this.swiper.slideTo(1);

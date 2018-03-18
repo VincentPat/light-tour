@@ -50,6 +50,7 @@ export default {
         transform: translate(0, -50%);
         color: $c-greenblue;
         width: 60vw;
+        font-family: 'CNB';
         &__img {
             width: 8vw;
             display: block;

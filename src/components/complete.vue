@@ -53,6 +53,7 @@ export default {
         padding: 10vw;
         box-sizing: border-box;
         font-size: .2rem;
+        font-family: 'CNB';
         &__close {
             position: absolute;
             top: 10vw;
@@ -67,6 +68,7 @@ export default {
             &--border {
                 border-bottom: .02rem dashed $c-greenblue;
                 padding-bottom: .16rem;
+                font-family: 'ENB';
             }
             div:last-child {
                 font-size: .14rem;

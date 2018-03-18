@@ -92,6 +92,7 @@ export default {
             padding: 10vw;
             box-sizing: border-box;
             font-size: .2rem;
+            font-family: 'CNB';
             &__close {
                 position: absolute;
                 top: 10vw;
@@ -118,6 +119,7 @@ export default {
                     margin: 0;
                 }
                 h4 {
+                    font-family: 'ENB';
                     margin: 0;
                     font-size: .16rem;
                 }
@@ -125,10 +127,11 @@ export default {
             &__rule {
                 h4 {
                     font-size: .16rem;
-                    margin: .06rem 0;
+                    margin: .1rem 0;
                     font-weight: bold;
                 }
                 ul {
+                    font-family: 'CN';
                     margin: 0;
                     font-size: .14rem;
                     padding-left: .24rem;
@@ -137,7 +140,7 @@ export default {
             &__address {
                 h4 {
                     font-size: .16rem;
-                    margin: .06rem 0;
+                    margin: .1rem 0;
                     font-weight: bold;
                 }
             }
@@ -146,6 +149,7 @@ export default {
             font-size: .16rem;
             font-weight: bold;
             margin: .2rem 0;
+            font-family: 'CNB';
             div {
                 display: inline-block;
                 position: relative;

@@ -56,6 +56,7 @@ export default {
     }
     &__desc {
         font-size: .14rem;
+        font-family: 'CN';
         color: $c-lightyellow;
         p {
             margin: 0px;

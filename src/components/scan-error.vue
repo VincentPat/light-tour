@@ -46,6 +46,7 @@ export default {
         padding: 10vw;
         box-sizing: border-box;
         font-size: .2rem;
+        font-family: 'CNB';
         &__close {
             position: absolute;
             top: 10vw;

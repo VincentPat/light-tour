@@ -64,6 +64,7 @@ export default {
         padding: 10vw;
         box-sizing: border-box;
         font-size: .2rem;
+        font-family: 'CNB';
         &__close {
             position: absolute;
             top: 10vw;
@@ -77,15 +78,17 @@ export default {
             text-align: center;
             &__title {
                 border-bottom: .02rem dashed $c-greenblue;
+                padding-bottom: .06rem;
             }
             &__img {
                 background: rgba(0, 0, 0, 0.5);
                 width: 80%;
                 display: block;
-                margin: .14rem auto;
+                margin: .12rem auto;
             }
             &__name {
                 font-size: .14rem;
+                margin-bottom: .06rem;
             }
         }
         &__remind {
