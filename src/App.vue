@@ -68,14 +68,13 @@ export default {
     data() {
         return {
             hasGotPrize: false, // 是否已经获得奖品
-            isMember: true, // 是否为会员
+            isMember: false, // 是否为会员
             progress: 0, // 加载进度
             timestamp: Date.now(), // 进入页面的时间
             envData: {}, // 运行环境参数
             imgs: [], // 图片
             audios: {}, // 音频
             audiosSrc: {
-                // bg: 'https://static.cdn.24haowan.com/music/32/321520852919.mp3',
                 bg: 'https://24haowan-cdn.shanyougame.com/dingzhi/k11-light-tour/bgm.mp3',
                 click: 'https://static.cdn.24haowan.com/music/32/321520853009.mp3',
                 goal: 'https://static.cdn.24haowan.com/music/32/321520853048.mp3',
@@ -107,23 +106,11 @@ export default {
             this.env = location.host.match(/api.24haowan.com/ig) ? 'production' : 'test';
             if (this.env === 'test') {
                 this.envData = {
-                    host: 'http://test.api.klub11.com',
-                    account_id: '6',
-                    apiKey: '271151990342466',
-                    apiSecret: 'rAoV68K4',
-                    interfaceId: 'fb9cff6e93ff6342f066',
-                    skey: '21da1090',
                     cardId: 'pC2Vgv8HOaMpzoY8v9MH9TTi3AOc',
                     host24: 'http://test.ac.24haowan.com'
                 };
             } else if (this.env === 'production') {
                 this.envData = {
-                    host: 'http://lighttour-v.klub11.com',
-                    account_id: '6',
-                    apiKey: '155152110859733',
-                    apiSecret: 'C7IZh37L',
-                    interfaceId: 'a4e1d7e32123751f911a',
-                    skey: 'b1603307',
                     cardId: 'pC2Vgv8HOaMpzoY8v9MH9TTi3AOc',
                     host24: 'http://api.24haowan.com'
                 };
@@ -359,26 +346,16 @@ export default {
         },
         // 请求相关
         getWxConfig() {
-            const url = `${this.envData.host}/v1/wechat-js/js-config`;
-            const timestamp = Date.now();
+            const url = `${this.envData.host24}/jssdk/jssdkParams`;
             const params = {
-                apiKey: this.envData.apiKey,
-                interfaceId: this.envData.interfaceId,
-                timestamp,
-                account_id: this.envData.account_id,
-                domain_url: location.href.split('#')[0]
+                gameName: 'lightTour'
             };
-            const sign = this.genSign(params);
-            params.sign = sign;
             axios({
                 method: 'get',
                 url,
-                params,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                params
             }).then((response) => {
-                const result = this.decodeReturnData(response.data);
+                const result = response.data;
                 const config = result.data;
                 this.setWx(config);
             }).catch((error) => {
@@ -387,7 +364,10 @@ export default {
         },
         // 设置微信分享信息
         setWx(config) {
-            wx.configWx(config);
+            wx.configWx(config, [
+                // 所有要调用的 API 都要加到这个列表中
+                'onMenuShareTimeline', 'onMenuShareAppMessage', 'hideMenuItems', 'scanQRCode', 'addCard'
+            ]);
             const wxShareObj = {
                 title: '今晚去边？广州K11开业地图带你闯关光感革新之旅',
                 desc: '今晚去边？闯关六大主题空间，完成任务，点亮地图即可体验K11开业首展',
@@ -397,57 +377,6 @@ export default {
             wx.setWxShare(wxShareObj, () => {
                 this.$bus.$emit('shareCallback');
             });
-        },
-        // 解析K11的返回数据
-        decodeReturnData(str) {
-            let result = str;
-            const skey = this.envData.skey;
-            const replaceStr = {
-                mqtp: ':',
-                mbscd: '=',
-                nnddt: '+',
-                abcde: '/',
-                adted: '|'
-            };
-            Object.keys(replaceStr).forEach((char) => {
-                result = result.replace(new RegExp(char, 'g'), replaceStr[char]);
-            });
-            const len = result.length;
-            const charArr = [];
-            const charNum = Math.floor(len / 2);
-            for (let i = 1; i <= charNum; i += 1) {
-                const startIndex = (i - 1) * 2;
-                const char = result.substr(startIndex, 2);
-                charArr.push(char);
-            }
-            const skeyArr = skey.split('');
-            const skeyArrLen = skeyArr.length;
-            for (let key = 0; key < skeyArrLen; key += 1) {
-                const value = skeyArr[key];
-                if (key <= skeyArrLen && charArr[key][1] === value) {
-                    charArr[key] = charArr[key][0];
-                }
-            }
-            const temp = charArr.join('');
-            let temp2 = Base64.decode(temp);
-            try {
-                temp2 = JSON.parse(temp2);
-            } catch (error) {
-                console.error(error);
-            }
-            return temp2;
-        },
-        // 生成签名
-        genSign(params) {
-            const data = Object.assign({
-                apiSecret: this.envData.apiSecret
-            }, params);
-            let paramStr = '';
-            const keys = Object.keys(data).sort();
-            keys.forEach((key) => {
-                paramStr = `${paramStr}${key}+${data[key]}`;
-            });
-            return md5(paramStr);
         },
         // 获取是否为会员
         getIsMember() {
@@ -471,51 +400,13 @@ export default {
             }).then((response) => {
                 const result = response.data;
                 if (result.code === 0) {
-                    // if (result.data.markAll === 1) { // 全部标记
-                    //     this.$bus.$emit('showGiftButton');
-                    // }
                     const mark = result.data.mark;
                     let count = 0;
                     Object.keys(mark).forEach((key) => {
                         if (mark[key] === 'yes') count += 1;
                     });
                     if (count >= 5) { // 已达成条件
-                        const url = `${this.envData.host}/v1/wechat-js/user-card-list`;
-                        const timestamp = Date.now();
-                        const params = {
-                            apiKey: this.envData.apiKey,
-                            interfaceId: this.envData.interfaceId,
-                            timestamp,
-                            account_id: this.envData.account_id
-                        };
-                        let openid = location.href.match(/openid=\w+/ig)[0];
-                        openid = openid.substr(7);
-                        const data = {
-                            cardId: this.envData.cardId,
-                            openid
-                        };
-                        const sign = this.genSign(Object.assign({}, params, data));
-                        params.sign = sign;
-                        axios({
-                            method: 'POST',
-                            url,
-                            params,
-                            data,
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        }).then((response2) => {
-                            const result2 = this.decodeReturnData(response2.data);
-                            const cardList = result2.data;
-                            if (cardList.length > 0) { // 已领取
-                                this.$bus.$emit('hideGiftButton');
-                                this.hasGotPrize = true;
-                            } else {
-                                this.$bus.$emit('showGiftButton');
-                            }
-                        }).catch((error) => {
-                            console.error(error);
-                        });
+                        this.getCard();
                     } else {
                         this.$bus.$emit('hideGiftButton');
                     }
@@ -528,28 +419,43 @@ export default {
                 }
             });
         },
+        // 获取用户已领取卡券列表
+        getCard() {
+            const url = `${this.envData.host24}/jssdk/userCardList`;
+            const params = {
+                cardid: this.envData.cardId,
+                gameName: 'lightTour'
+            };
+            axios({
+                method: 'GET',
+                url,
+                params
+            }).then((response) => {
+                const result = response.data;
+                const cardList = result.data;
+                if (cardList.length > 0) { // 已领取
+                    this.$bus.$emit('hideGiftButton');
+                    this.hasGotPrize = true;
+                } else {
+                    this.$bus.$emit('showGiftButton');
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+        },
         // 添加卡券
         addCard(callback) {
-            const url = `${this.envData.host}/v1/wechat-js/card-ext-config`;
-            const timestamp = Date.now();
+            const url = `${this.envData.host24}/jssdk/addCard`;
             const params = {
-                apiKey: this.envData.apiKey,
-                interfaceId: this.envData.interfaceId,
-                timestamp,
-                account_id: this.envData.account_id,
-                cardId: this.envData.cardId
+                gameName: 'lightTour',
+                cardid: this.envData.cardId
             };
-            const sign = this.genSign(params);
-            params.sign = sign;
             axios({
                 method: 'get',
                 url,
-                params,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                params
             }).then((response) => {
-                const result = this.decodeReturnData(response.data);
+                const result = response.data;
                 const cardList = result.data;
                 window.wx.addCard({
                     cardList, // 需要添加的卡券列表

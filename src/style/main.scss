@@ -12,6 +12,18 @@ img {
     -webkit-tap-highlight-color: transparent;
 }
 
+iframe,
+.pingfuADHolder,
+.lxb-container {
+    display: none;
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    width: 0!important;
+    height: 0!important;
+    top: -10000px!important;
+    left: -10000px!important;
+}
 
 @font-face {
     font-family: 'F1';
