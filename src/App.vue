@@ -97,6 +97,7 @@ export default {
             showScanError: false,
             showComplete: false,
             showGetPrize: false,
+            musicPreplayed: false
         };
     },
     methods: {
@@ -229,7 +230,7 @@ export default {
                 this.showPoint = true;
                 setTimeout(() => {
                     this.$bus.$emit('hidePoint');
-                }, 3000);
+                }, 2000);
             });
             this.$bus.$on('hidePoint', () => {
                 this.showPoint = false;
@@ -273,6 +274,7 @@ export default {
             // 自动播放音乐
             document.body.addEventListener('touchstart', () => {
                 this.playMusic('bg');
+                if (!this.musicPreplayed) this.preplayMusic();
             });
             // 分享回调
             this.$bus.$on('shareCallback', () => {
@@ -331,6 +333,17 @@ export default {
                 this.audios[key] = new Audio();
                 this.audios[key].src = url;
                 if (key === 'bg') this.audios[key].loop = true;
+            });
+        },
+        // 预播放音乐
+        preplayMusic() {
+            this.musicPreplayed = true;
+            Object.keys(this.audios).forEach((key) => {
+                if (key !== 'bg') {
+                    this.audios[key].play();
+                    this.audios[key].pause();
+                    this.audios[key].currentTime = 0;
+                }
             });
         },
         playMusic(key) {

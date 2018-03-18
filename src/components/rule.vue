@@ -8,7 +8,7 @@
                 <p>开启Light Tour</p>
                 <p>捕捉光的元素，寻找光的答案</p>
                 <p>WHERE ARE YOU GOING TONIGHT?</p>
-                <p>To Where the light is!</p>
+                <p>To where the light is!</p>
             </div>
             <img src="https://static.cdn.24haowan.com/img/32/32152051869666093.png"
                 class="rule__desc__splitor">

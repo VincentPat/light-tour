@@ -68,7 +68,11 @@ export default {
     },
     mounted() {
         this.$bus.$on('goal', ({ no }) => {
-            if (no === 3) this.active = true;
+            if (no === 3) {
+                setTimeout(() => {
+                    this.active = true;
+                }, 2000);
+            }
         });
         this.startShowLight();
     }

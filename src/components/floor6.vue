@@ -108,7 +108,11 @@ export default {
         this.noteCnt = document.querySelectorAll('.floor6__note')[0];
         this.showNote();
         this.$bus.$on('goal', ({ no }) => {
-            if (no === 6) this.active = true;
+            if (no === 6) {
+                setTimeout(() => {
+                    this.active = true;
+                }, 2000);
+            }
         });
     }
 };

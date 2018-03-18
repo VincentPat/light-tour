@@ -59,7 +59,11 @@ export default {
     },
     mounted() {
         this.$bus.$on('goal', ({ no }) => {
-            if (no === 2) this.active = true;
+            if (no === 2) {
+                setTimeout(() => {
+                    this.active = true;
+                }, 2000);
+            }
         });
     }
 };
