@@ -1,5 +1,5 @@
 <template>
-    <div class="home" @touchmove.stop>
+    <div class="home" @touchmove.stop.prevent>
         <swiper :options="swiperOption"
             ref="swiper"
             class="home__swiper"
