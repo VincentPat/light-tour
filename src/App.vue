@@ -484,7 +484,12 @@ export default {
                 console.log(result);
                 const cardList = result.data;
                 window.wx.addCard({
-                    cardList, // 需要添加的卡券列表
+                    cardList: [
+                        {
+                            cardId: cardList[0].cardId,
+                            cardExt: JSON.stringify(cardList[0].cardExt)
+                        }
+                    ], // 需要添加的卡券列表
                     success: () => {
                         if (typeof callback === 'function') callback();
                     }
