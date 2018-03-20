@@ -509,7 +509,6 @@ export default {
         this.getFloorComplete();
         window.bus = this.$bus;
         window.app = this;
-        if (location.host.indexOf('192.168') !== -1) this.isMember = true;
     }
 };
 </script>
