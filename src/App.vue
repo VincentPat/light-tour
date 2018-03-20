@@ -1,5 +1,5 @@
 <template>
-    <div id="app" @touchmove.stop>
+    <div id="app" @touchmove.stop.prevent>
         <transition name="fade" appear>
             <loading v-show="showLoading"></loading>
         </transition>
@@ -509,6 +509,7 @@ export default {
         this.getFloorComplete();
         window.bus = this.$bus;
         window.app = this;
+        if (location.host.indexOf('192.168') !== -1) this.isMember = true;
     }
 };
 </script>

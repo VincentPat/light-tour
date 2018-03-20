@@ -1,5 +1,5 @@
 <template>
-    <div class="home" @touchmove.stop.prevent>
+    <div class="home" @touchmove.stop>
         <swiper :options="swiperOption"
             ref="swiper"
             class="home__swiper"
@@ -22,7 +22,8 @@
         </div>
         <div class="home__floors"
             :class="{ show: showFloors }"
-            @touchmove.stop>
+            @touchstart="floorTouchStart"
+            @touchmove.stop="floorTouchMove">
             <img src="https://static.cdn.24haowan.com/img/32/32152056921844150.png"
                 class="home__floors__bg"
                 @load="bgLoad">
@@ -93,7 +94,7 @@ export default {
             },
             showFloors: false,
             showSwiper: true,
-            lastScroll: 0,
+            startY: 0,
         };
     },
     methods: {
@@ -129,6 +130,18 @@ export default {
                 break;
             }
             return `height: ${height}px;top: ${top}px;`;
+        },
+        floorTouchStart(e) {
+            this.startY = e.pageY;
+        },
+        floorTouchMove(e) {
+            const delta = e.pageY - this.startY;
+            if (delta > 40) this.back();
+        },
+        back() {
+            this.showFloors = false;
+            this.showSwiper = true;
+            this.swiper.slideTo(1);
         }
     },
     mounted() {
@@ -137,12 +150,7 @@ export default {
         });
         const floors = document.querySelectorAll('.home__floors')[0];
         floors.addEventListener('scroll', () => {
-            if (floors.scrollTop < -40) {
-                this.showFloors = false;
-                this.showSwiper = true;
-                this.swiper.slideTo(1);
-            }
-            this.lastScroll = floors.scrollTop;
+            if (floors.scrollTop < -40) this.back();
         });
         window.swiper = this.swiper;
     }
