@@ -391,8 +391,8 @@ export default {
                 'onMenuShareTimeline', 'onMenuShareAppMessage', 'hideMenuItems', 'scanQRCode', 'addCard'
             ]);
             const wxShareObj = {
-                title: '今晚去边？广州K11开业地图带你闯关光感革新之旅',
-                desc: '今晚去边？闯关六大主题空间，完成任务，点亮地图即可体验K11开业首展',
+                title: '你今晚去边？广州K11【Light Map】带你开启光感革新之旅',
+                desc: '你今晚去边？快来体验Light Tour六大主题任务，点亮手机地图即可体验广州K11开业首展',
                 link: 'http://lighttour-v.klub11.com/games/k11LightTour/1',
                 imgUrl: 'https://static.cdn.24haowan.com/img/32/32152090772391067.jpg'
             };
