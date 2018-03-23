@@ -95,6 +95,7 @@ export default {
             showFloors: false,
             showSwiper: true,
             startY: 0,
+            checkTouchMove: true,
         };
     },
     methods: {
@@ -135,8 +136,10 @@ export default {
             this.startY = e.pageY;
         },
         floorTouchMove(e) {
-            const delta = e.pageY - this.startY;
-            if (delta > 40) this.back();
+            if (this.checkTouchMove) {
+                const delta = e.pageY - this.startY;
+                if (delta > 40) this.back();
+            }
         },
         back() {
             this.showFloors = false;
@@ -151,6 +154,11 @@ export default {
         const floors = document.querySelectorAll('.home__floors')[0];
         floors.addEventListener('scroll', () => {
             if (floors.scrollTop < -40) this.back();
+            if (floors.scrollTop <= 0) {
+                this.checkTouchMove = true;
+            } else {
+                this.checkTouchMove = false;
+            }
         });
         window.swiper = this.swiper;
     }
