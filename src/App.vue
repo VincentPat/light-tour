@@ -250,7 +250,7 @@ export default {
             // 获得奖品
             this.$bus.$on('getCompletePrize', () => {
                 /* eslint no-underscore-dangle: "off" */
-                window._vio.push(['_trackEvent', 'button']);
+                window._vio.push(['_trackEvent', 'gift']);
                 window._hmt.push(['_trackEvent', 'button', 'click', 'GetPrize']);
                 this.addCard(() => {
                     this.hasGotPrize = true;

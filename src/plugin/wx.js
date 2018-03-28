@@ -30,16 +30,16 @@ export default {
             window.wx.ready(() => {
                 // 在这里调用 API
                 // 分享朋友圈
-                window.wx.onMenuShareTimeline({
+                window.wx.onMenuShareTimeline(window._vio.push(['_share', 'moment', {
                     title: wxShareObj.title, // 分享标题
                     link: wxShareObj.link, // 分享链接
                     imgUrl: wxShareObj.imgUrl, // 分享图标
                     success: function success() {
                         if (typeof callback === 'function') callback();
                     }
-                });
+                }]));
                 // 分享朋友
-                window.wx.onMenuShareAppMessage({
+                window.wx.onMenuShareAppMessage(window._vio.push(['_share', 'friend', {
                     title: wxShareObj.title, // 分享标题
                     desc: wxShareObj.desc, // 分享描述
                     link: wxShareObj.link, // 分享链接
@@ -49,7 +49,7 @@ export default {
                     success: function success() {
                         if (typeof callback === 'function') callback();
                     }
-                });
+                }]));
             });
         }
     },
