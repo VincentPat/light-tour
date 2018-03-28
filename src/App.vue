@@ -250,7 +250,7 @@ export default {
             // 获得奖品
             this.$bus.$on('getCompletePrize', () => {
                 /* eslint no-underscore-dangle: "off" */
-                window._vio.push(["_trackEvent", 'button']);
+                window._vio.push(['_trackEvent', 'button']);
                 window._hmt.push(['_trackEvent', 'button', 'click', 'GetPrize']);
                 this.addCard(() => {
                     this.hasGotPrize = true;
@@ -279,7 +279,7 @@ export default {
             });
             // 分享回调
             this.$bus.$on('shareCallback', () => {
-                window._vio.push(["_trackEvent", 'share']);
+                window._vio.push(['_trackEvent', 'share']);
                 window._hmt.push(['_trackEvent', 'share', 'share', 'share']);
                 this.$bus.$emit('hideShare');
                 axios({
