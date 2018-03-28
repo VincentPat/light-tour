@@ -25,6 +25,7 @@ module.exports = {
     },
     // add your custom rules here
     rules: {
+        'no-underscore-dangle': ['off'],
         // 混合运算符
         'no-mixed-operators': ['off'],
         // 拖尾逗号
