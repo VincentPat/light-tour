@@ -250,6 +250,7 @@ export default {
             // 获得奖品
             this.$bus.$on('getCompletePrize', () => {
                 /* eslint no-underscore-dangle: "off" */
+                window._vio.push(["_trackEvent", 'button']);
                 window._hmt.push(['_trackEvent', 'button', 'click', 'GetPrize']);
                 this.addCard(() => {
                     this.hasGotPrize = true;
@@ -278,6 +279,7 @@ export default {
             });
             // 分享回调
             this.$bus.$on('shareCallback', () => {
+                window._vio.push(["_trackEvent", 'share']);
                 window._hmt.push(['_trackEvent', 'share', 'share', 'share']);
                 this.$bus.$emit('hideShare');
                 axios({
@@ -304,7 +306,7 @@ export default {
             // 滑动页面
             this.$bus.$on('slideChange', ({ activeIndex, callback }) => {
                 if (activeIndex >= 2 && !this.isMember) {
-                    location.href = `https://app.klub11.com/?r=page/auth&account_id=6&origin=7&css=2&_redirecturl=${encodeURIComponent(location.href.split('#')[0])}`;
+                    location.href = `https://app.klub11.com/?r=page/auth&account_id=10&origin=264&css=2&_redirecturl=${encodeURIComponent(location.href.split('#')[0])}`;
                 }
                 if (activeIndex === 2 && this.isMember) {
                     callback();
@@ -497,6 +499,12 @@ export default {
             }).catch((error) => {
                 console.error(error);
             });
+        },
+        // 监测UV
+        setOpenId() {
+            let openid = location.search.match(/openid=\w+/);
+            openid = openid ? openid[0].split('=')[1] : '';
+            window._vio.push(['_setUserID', openid]);
         }
     },
     mounted() {
@@ -507,6 +515,7 @@ export default {
         this.getWxConfig();
         this.getIsMember();
         this.getFloorComplete();
+        this.setOpenId();
         window.bus = this.$bus;
         window.app = this;
     }
