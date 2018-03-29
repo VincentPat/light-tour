@@ -192,6 +192,7 @@ export default {
     }
     &__floors {
         @include fullscreen;
+        font-size: 0px;
         transition: all linear .5s;
         opacity: 0;
         overflow: hidden;

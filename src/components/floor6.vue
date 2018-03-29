@@ -128,6 +128,7 @@ export default {
 .floor6 {
     @include fullfill;
     overflow: hidden;
+    padding-bottom: .2rem;
     img {
         &.before, &.after {
             width: 100%;
@@ -214,7 +215,6 @@ export default {
         width: 50vw;
         bottom: 0;
         left: 25vw;
-        transform: translate(0, 100%);
     }
 }
 
