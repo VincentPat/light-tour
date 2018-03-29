@@ -499,12 +499,6 @@ export default {
             }).catch((error) => {
                 console.error(error);
             });
-        },
-        // 监测UV
-        setOpenId() {
-            let openid = location.search.match(/openid=\w+/);
-            openid = openid ? openid[0].split('=')[1] : '';
-            window._vio.push(['_setUserID', openid]);
         }
     },
     mounted() {
@@ -515,7 +509,6 @@ export default {
         this.getWxConfig();
         this.getIsMember();
         this.getFloorComplete();
-        this.setOpenId();
         window.bus = this.$bus;
         window.app = this;
     }

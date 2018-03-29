@@ -15,11 +15,13 @@
             s.parentNode.insertBefore(hm, s);
         })();
         </script>
-        <script>        
+        <script>
+            var openid = location.search.match(/openid=\w+/);
+            openid = openid ? openid[0].split('=')[1] : '';
             var _vio = _vio || [];
             (function() {
             _vio.push(['_setAccountID','155152110859733']);//这里请替换成实际应用ID(后台创建APP时,会自动生成)
-            // _vio.push(['_setUserID','这里替换成微信openid值']);//不需要监测openid时请注释这一行
+            _vio.push(['_setUserID',openid]);//不需要监测openid时请注释这一行
             //_vio.push(['_setAutoPageview', false]); //默认为true,表示不启用自定义页面URL
             var ma = document.createElement('script');
             ma.type = 'text/javascript'; 
