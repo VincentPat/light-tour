@@ -133,11 +133,12 @@ export default {
             return `height: ${height}px;top: ${top}px;`;
         },
         floorTouchStart(e) {
-            this.startY = e.pageY;
+            this.startY = e.pageY || e.touches[0].pageY;
         },
         floorTouchMove(e) {
             if (this.checkTouchMove) {
-                const delta = e.pageY - this.startY;
+                const current = e.pageY || e.touches[0].pageY;
+                const delta = current - this.startY;
                 if (delta > 40) this.back();
             }
         },
