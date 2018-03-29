@@ -112,7 +112,7 @@ export default {
                 };
             } else if (this.env === 'production') {
                 this.envData = {
-                    cardId: 'pQzhSw2nSvBujEhMZ3hptB8QzhCk',
+                    cardId: 'pQzhSw4PZNIiE1WenpDpZk4bs_K8',
                     host24: 'http://lighttour-v.klub11.com'
                 };
             }
