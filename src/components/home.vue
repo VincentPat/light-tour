@@ -88,6 +88,7 @@ export default {
                     slideNextTransitionEnd: () => {
                         if (this.swiper.activeIndex === 2) {
                             this.showSwiper = false;
+                            this.$bus.$emit('showFloors');
                         }
                     }
                 }
@@ -193,6 +194,7 @@ export default {
         @include fullscreen;
         transition: all linear .5s;
         opacity: 0;
+        overflow: hidden;
         overflow-y: auto;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;

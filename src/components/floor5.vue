@@ -64,6 +64,7 @@ export default {
 
 .floor5 {
     @include fullfill;
+    overflow: hidden;
     img {
         &.before, &.after {
             width: 100%;

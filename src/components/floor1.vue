@@ -64,6 +64,7 @@ export default {
 
 .floor1 {
     @include fullfill;
+    overflow: hidden;
     top: 0;
     img {
         &.before, &.after {

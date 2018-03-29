@@ -85,6 +85,7 @@ export default {
 
 .floor3 {
     @include fullfill;
+    overflow: hidden;
     img {
         &.before, &.after {
             width: 100%;

@@ -75,6 +75,7 @@ export default {
 
 .floor2 {
     @include fullfill;
+    overflow: hidden;
     img {
         &.before, &.after {
             width: 100%;

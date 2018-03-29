@@ -50,6 +50,7 @@ export default {
     name: 'floor6',
     data() {
         return {
+            timeout: false,
             active: false,
             noteCnt: null,
             noteImgs: [
@@ -72,7 +73,7 @@ export default {
             this.$bus.$emit('showShare');
         },
         showNote() {
-            setTimeout(() => {
+            this.timeout = setTimeout(() => {
                 this.createNote();
                 this.showNote();
             }, 300);
@@ -106,7 +107,9 @@ export default {
     },
     mounted() {
         this.noteCnt = document.querySelectorAll('.floor6__note')[0];
-        this.showNote();
+        this.$bus.$on('showFloors', () => {
+            if (!this.timeout) this.showNote();
+        });
         this.$bus.$on('goal', ({ no }) => {
             if (no === 6) {
                 setTimeout(() => {
@@ -124,6 +127,7 @@ export default {
 
 .floor6 {
     @include fullfill;
+    overflow: hidden;
     img {
         &.before, &.after {
             width: 100%;
