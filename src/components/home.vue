@@ -140,7 +140,7 @@ export default {
             if (this.checkTouchMove) {
                 const current = e.pageY || e.touches[0].pageY;
                 const delta = current - this.startY;
-                if (delta > 40) this.back();
+                if (delta > 80) this.back();
             }
         },
         back() {
@@ -155,7 +155,7 @@ export default {
         });
         const floors = document.querySelectorAll('.home__floors')[0];
         floors.addEventListener('scroll', () => {
-            if (floors.scrollTop < -40) this.back();
+            if (floors.scrollTop < -80) this.back();
             if (floors.scrollTop <= 0) {
                 this.checkTouchMove = true;
             } else {
