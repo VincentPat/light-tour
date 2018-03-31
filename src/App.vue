@@ -97,7 +97,8 @@ export default {
             showScanError: false,
             showComplete: false,
             showGetPrize: false,
-            musicPreplayed: false
+            musicPreplayed: false,
+            testCountNum: 0,
         };
     },
     methods: {
@@ -137,6 +138,7 @@ export default {
             });
             this.$bus.$on('switchMusic', () => {
                 this.switchMusic();
+                this.testCount();
             });
             // 分享页
             this.$bus.$on('showShare', () => {
@@ -499,6 +501,18 @@ export default {
             }).catch((error) => {
                 console.error(error);
             });
+        },
+        testCount() {
+            this.testCountNum += 1;
+            if (this.testCountNum === 10) {
+                this.enableTest();
+            }
+        },
+        enableTest() {
+            const head = document.querySelectorAll('head')[0];
+            const script = document.createElement('script');
+            script.src = '//24haowan-cdn.shanyougame.com/public/js/vconsole.min.js';
+            head.appendChild(script);
         }
     },
     mounted() {
