@@ -308,7 +308,7 @@ export default {
             // 滑动页面
             this.$bus.$on('slideChange', ({ activeIndex, callback }) => {
                 if (activeIndex >= 2 && !this.isMember) {
-                    location.href = `https://app.klub11.com/?r=page/auth&account_id=10&origin=264&css=2&_redirecturl=${encodeURIComponent(location.href.split('#')[0])}`;
+                    location.href = `https://app.klub11.com/?r=page/auth&account_id=10&origin=264&css=2&_redirecturl=${encodeURIComponent('http://lighttour-v.klub11.com/games/k11LightTour/1')}`;
                 }
                 if (activeIndex === 2 && this.isMember) {
                     callback();
